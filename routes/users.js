@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const { getProfile, updateProfile } = require('../controllers/userController');
 const { protect } = require('../middleware/auth');
 
-// Protected route to test token
-router.get('/profile', protect, (req, res) => {
-  res.json({
-    message: 'Protected route accessed ✅',
-    user: req.user
-  });
-});
+// GET current user's profile (protected)
+router.get('/profile', protect, getProfile);
+
+// PUT update current user's profile (protected)
+router.put('/profile', protect, updateProfile);
 
 module.exports = router;
