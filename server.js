@@ -34,3 +34,6 @@ mongoose.connect(process.env.MONGO_URI, {
 
 const sendOtpRoute = require('./routes/forgotPassword/sendOtp');
 app.use('/api/v1/forgot-password/send-otp', sendOtpRoute);
+
+const verifyOtpRoute = require('./routes/forgotPassword/verifyOtp');
+app.use('/api/v1/forgot-password/verify-otp', verifyOtpRoute);
