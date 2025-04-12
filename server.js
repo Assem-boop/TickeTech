@@ -31,3 +31,6 @@ mongoose.connect(process.env.MONGO_URI, {
 }).catch((error) => {
     console.error("❌ MongoDB connection failed:", error.message);
 });
+
+const sendOtpRoute = require('./routes/forgotPassword/sendOtp');
+app.use('/api/v1/forgot-password/send-otp', sendOtpRoute);
