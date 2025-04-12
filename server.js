@@ -37,3 +37,6 @@ app.use('/api/v1/forgot-password/send-otp', sendOtpRoute);
 
 const verifyOtpRoute = require('./routes/forgotPassword/verifyOtp');
 app.use('/api/v1/forgot-password/verify-otp', verifyOtpRoute);
+
+const resetPasswordRoute = require('./routes/forgotPassword/resetPassword');
+app.use('/api/v1/forgot-password/reset-password', resetPasswordRoute);
