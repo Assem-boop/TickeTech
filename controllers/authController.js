@@ -13,8 +13,10 @@ const generateToken = (userId) => {
 // REGISTER USER
 // ===================================
 const registerUser = async (req, res) => {
-    let { name, email, password } = req.body;
+    let { name, email, password, role } = req.body;
+
     email = email.toLowerCase();
+    role = role || "Standard"; // fallback if not provided
 
     try {
         const existingUser = await User.findOne({ email });
@@ -22,11 +24,12 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ message: "User already exists" });
         }
 
-        // ✅ DO NOT hash manually — Mongoose will handle it
+        // Mongoose handles password hashing via pre-save hook
         const newUser = await User.create({
             name,
             email,
-            password
+            password,
+            role
         });
 
         console.log("🆕 Registered user:", newUser);
@@ -45,9 +48,11 @@ const registerUser = async (req, res) => {
             }
         });
     } catch (err) {
+        console.error("❌ Registration error:", err);
         res.status(500).json({ message: err.message });
     }
 };
+
 
 // ===================================
 // LOGIN USER

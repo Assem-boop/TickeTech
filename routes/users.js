@@ -3,7 +3,11 @@ const router = express.Router();
 
 const {
     getProfile,
-    updateProfile
+    updateProfile,
+    getAllUsers,
+    getUserById,
+    updateUserRole,
+    deleteUser
 } = require('../controllers/userController');
 
 const {
@@ -24,5 +28,17 @@ router.get('/admin-test', protect, authorizeRoles('Admin'), (req, res) => {
         user: req.user
     });
 });
+
+// Admin-only: Get all users
+router.get('/', protect, authorizeRoles('Admin'), getAllUsers);
+
+// Admin-only: Get single user
+router.get('/:id', protect, authorizeRoles('Admin'), getUserById);
+
+// Admin-only: Update user role
+router.put('/:id', protect, authorizeRoles('Admin'), updateUserRole);
+
+// Admin-only: Delete user
+router.delete('/:id', protect, authorizeRoles('Admin'), deleteUser);
 
 module.exports = router;
