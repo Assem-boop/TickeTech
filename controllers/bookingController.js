@@ -1,7 +1,7 @@
 const Booking = require('../models/Booking');
 const Event = require('../models/Event');
 
-// Create a booking
+
 exports.createBooking = async (req, res) => {
   try {
     const { eventId, quantity } = req.body;
@@ -34,7 +34,7 @@ exports.createBooking = async (req, res) => {
   }
 };
 
-// Cancel a booking
+
 exports.cancelBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
@@ -61,17 +61,8 @@ exports.cancelBooking = async (req, res) => {
   }
 };
 
-// Get current user's bookings
-exports.getUserBookings = async (req, res) => {
-  try {
-    const bookings = await Booking.find({ user: req.user.id }).populate('event');
-    res.status(200).json({ success: true, bookings });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
-// Get booking by ID
+
 exports.getBookingById = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id).populate('event');
