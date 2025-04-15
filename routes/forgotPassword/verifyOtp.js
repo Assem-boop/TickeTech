@@ -6,27 +6,23 @@ router.post('/', async (req, res) => {
     const { email, code } = req.body;
 
     if (!email || !code) {
-        return res.status(400).json({ message: "Email and code are required" });
+        return res.status(400).json({ message: 'Email and code are required' });
     }
 
     try {
-        // Get OTP doc
-        const otpDoc = await Otp.findOne({ email: email.toLowerCase(), code });
+        const record = await Otp.findOne({ email: email.toLowerCase(), code });
 
-        if (!otpDoc) {
-            return res.status(400).json({ message: "Invalid OTP" });
+        if (!record) {
+            return res.status(400).json({ message: 'Invalid code' });
         }
 
-        if (otpDoc.expiresAt < Date.now()) {
-            return res.status(400).json({ message: "OTP has expired" });
+        if (record.expiresAt < Date.now()) {
+            return res.status(400).json({ message: 'Code expired' });
         }
 
-        // OTP is valid
-        res.status(200).json({ message: "OTP verified successfully" });
-
+        res.status(200).json({ message: 'Code verified' });
     } catch (err) {
-        console.error("❌ OTP verification failed:", err);
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: 'Something went wrong' });
     }
 });
 

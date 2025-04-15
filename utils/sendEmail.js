@@ -13,16 +13,13 @@ const sendEmail = async (to, subject, text) => {
         });
 
         await transporter.sendMail({
-            from: `"Ticketech Support" <${process.env.EMAIL_USER}>`,
+            from: process.env.EMAIL_USER,
             to,
             subject,
             text
         });
-
-        console.log("📨 Email sent to", to);
-    } catch (error) {
-        console.error("❌ Email send failed:", error);
-        throw new Error("Email could not be sent");
+    } catch (err) {
+        throw new Error('Failed to send email');
     }
 };
 
