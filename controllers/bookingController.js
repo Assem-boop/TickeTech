@@ -61,6 +61,14 @@ exports.cancelBooking = async (req, res) => {
   }
 };
 
+exports.getUserBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({ user: req.user.id }).populate('event');
+    res.status(200).json({ success: true, bookings });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
 exports.getBookingById = async (req, res) => {
