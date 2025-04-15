@@ -62,28 +62,6 @@ exports.deleteEvent = async (req, res) => {
   }
 };
 
-exports.getOwnEvents = async (req, res) => {
-  try {
-    const events = await Event.find({ organizer: req.user._id });
-    res.json(events);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-exports.getAnalytics = async (req, res) => {
-  try {
-    const events = await Event.find({ organizer: req.user._id });
-    const analytics = events.map(event => ({
-      eventId: event._id,
-      title: event.title,
-      bookedPercentage: ((event.bookedTickets / event.totalTickets) * 100).toFixed(2)
-    }));
-    res.json(analytics);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
 
 exports.updateStatus = async (req, res) => {
   try {
