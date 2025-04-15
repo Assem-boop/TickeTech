@@ -30,4 +30,11 @@ router.get('/:id', protect, authorizeRoles('Admin'), getUserById);
 router.put('/:id', protect, authorizeRoles('Admin'), updateUserRole);
 router.delete('/:id', protect, authorizeRoles('Admin'), deleteUser);
 
+const { getMyBookings } = require('../controllers/bookingController');
+router.get('/bookings', protect, getMyBookings);
+
+const { getMyEvents, getEventAnalytics } = require('../controllers/eventController');
+router.get('/events', protect, authorizeRoles('Organizer'), getMyEvents);
+router.get('/events/analytics', protect, authorizeRoles('Organizer'), getEventAnalytics);
+
 module.exports = router;
