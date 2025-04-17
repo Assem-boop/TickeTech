@@ -1,5 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
+const Booking = require('../models/Booking');
+const Event = require('../models/Event');
 
 const getProfile = async (req, res) => {
     res.json(req.user);
@@ -103,11 +105,60 @@ const deleteUser = async (req, res) => {
     }
 };
 
+const getMyBookings = async (req, res) => {
+    try {
+        const bookings = await Booking.find({ user: req.user.id })
+            .populate('event', 'title date location')
+            .sort({ createdAt: -1 });
+
+        res.json(bookings);
+    } catch (err) {
+        res.status(500).json({ message: 'Could not fetch bookings' });
+    }
+};
+
+const getMyEvents = async (req, res) => {
+    try {
+        const events = await Event.find({ organizer: req.user.id }).sort({ date: 1 });
+        res.json(events);
+    } catch (err) {
+        res.status(500).json({ message: 'Could not fetch events' });
+    }
+};
+
+const getEventAnalytics = async (req, res) => {
+    try {
+        const myEvents = await Event.find({ organizer: req.user.id }).select('_id title totalTickets');
+
+        const analytics = await Promise.all(
+            myEvents.map(async (event) => {
+                const totalBookings = await Booking.countDocuments({ event: event._id });
+                const percentBooked = event.totalTickets === 0
+                    ? 0
+                    : Math.round((totalBookings / event.totalTickets) * 100);
+
+                return {
+                    eventId: event._id,
+                    title: event.title,
+                    percentBooked
+                };
+            })
+        );
+
+        res.json(analytics);
+    } catch (err) {
+        res.status(500).json({ message: 'Could not fetch analytics' });
+    }
+};
+
 module.exports = {
     getProfile,
     updateProfile,
     getAllUsers,
     getUserById,
     updateUserRole,
-    deleteUser
+    deleteUser,
+    getMyBookings,
+    getMyEvents,
+    getEventAnalytics
 };

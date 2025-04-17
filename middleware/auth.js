@@ -12,7 +12,19 @@ const protect = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = await User.findById(decoded.id).select('-password');
+
+        const user = await User.findById(decoded.id).select('-password');
+        if (!user) {
+            return res.status(401).json({ message: 'User not found' });
+        }
+
+        req.user = {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: decoded.role 
+        };
+
         next();
     } catch (err) {
         res.status(401).json({ message: 'Not authorized, token failed' });
@@ -22,7 +34,7 @@ const protect = async (req, res, next) => {
 const authorizeRoles = (...roles) => {
     return (req, res, next) => {
         if (!roles.includes(req.user.role)) {
-            return res.status(403).json({ message: 'Access denied' });
+            return res.status(403).json({ message: `Access denied: required role ${roles}` });
         }
         next();
     };
