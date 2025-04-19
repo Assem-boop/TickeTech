@@ -73,3 +73,21 @@ exports.updateStatus = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
+exports.getApprovedEvents = async (req, res) => {
+  try {
+    const events = await Event.find({ status: 'approved' });
+    res.status(200).json({ success: true, count: events.length, data: events });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+};
+
+exports.getAllEvents = async (req, res) => {
+  try {
+    const events = await Event.find();
+    res.status(200).json({ success: true, count: events.length, data: events });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+};
