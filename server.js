@@ -15,12 +15,14 @@ const userRoutes = require('./routes/users');
 const sendOtpRoute = require('./routes/forgotPassword/sendOtp');
 const verifyOtpRoute = require('./routes/forgotPassword/verifyOtp');
 const resetPasswordRoute = require('./routes/forgotPassword/resetPassword');
+const eventRoutes = require('./routes/events'); 
 
 app.use('/api/v1', authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/forgot-password/send-otp', sendOtpRoute);
 app.use('/api/v1/forgot-password/verify-otp', verifyOtpRoute);
 app.use('/api/v1/forgot-password/reset-password', resetPasswordRoute);
+app.use('/api/v1/events', eventRoutes); 
 
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
