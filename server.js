@@ -17,7 +17,7 @@ const sendOtpRoute = require('./routes/forgotPassword/sendOtp');
 const verifyOtpRoute = require('./routes/forgotPassword/verifyOtp');
 const resetPasswordRoute = require('./routes/forgotPassword/resetPassword');
 const eventRoutes = require('./routes/events');
-const bookingRoutes = require('./routes/bookingRoutes');
+const bookingRoutes = require('./routes/bookings');
 
 // Use routes
 app.use('/api/v1', authRoutes);
