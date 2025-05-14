@@ -8,16 +8,19 @@ const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState(""); // 🔑 Required for backend
+  const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   useEffect(() => {
-    const savedEmail = localStorage.getItem("otpEmail");
-    if (!savedEmail) {
-      setError("Missing email. Please restart the process.");
+    const storedEmail = localStorage.getItem("otpEmail");
+    const storedCode = localStorage.getItem("verifiedOtpCode");
+
+    if (!storedEmail || !storedCode) {
+      setError("Verification incomplete. Please restart the process.");
     } else {
-      setEmail(savedEmail);
+      setEmail(storedEmail);
+      setCode(storedCode);
     }
   }, []);
 
@@ -25,11 +28,6 @@ const ResetPassword = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
-
-    if (!otp || !email || !password) {
-      setError("All fields are required.");
-      return;
-    }
 
     if (password !== confirm) {
       setError("Passwords do not match.");
@@ -39,12 +37,14 @@ const ResetPassword = () => {
     try {
       await api.put("/api/v1/forgot-password/reset-password", {
         email,
-        code: otp, // 🔑 Required
+        code,
         newPassword: password,
       });
 
       setSuccess("✅ Password reset! Redirecting...");
       localStorage.removeItem("otpEmail");
+      localStorage.removeItem("verifiedOtpCode");
+
       setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       setError(err.response?.data?.message || "Reset failed.");
@@ -56,14 +56,6 @@ const ResetPassword = () => {
       <div style={glassBox}>
         <h2 style={titleStyle}>Set New Password</h2>
         <form onSubmit={handleReset}>
-          <input
-            type="text"
-            placeholder="Enter OTP again"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            required
-            style={inputStyle}
-          />
           <input
             type="password"
             placeholder="New Password"
@@ -91,7 +83,8 @@ const ResetPassword = () => {
   );
 };
 
-// 🎨 Styles remain the same (reuse from previous pages)
+// 🎨 Same styles as previous
+
 const pageStyle = {
   height: "100vh",
   background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",

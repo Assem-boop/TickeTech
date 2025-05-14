@@ -29,6 +29,9 @@ const VerifyOtp = () => {
         code: otp,
       });
 
+      // ✅ Save code for next step
+      localStorage.setItem("verifiedOtpCode", otp);
+
       setSuccess("✅ OTP verified successfully!");
       setTimeout(() => navigate("/reset-password"), 1500);
     } catch (err) {
@@ -63,6 +66,8 @@ const VerifyOtp = () => {
     </div>
   );
 };
+
+// 🎨 Styles (unchanged — reuse your existing)
 
 const pageStyle = {
   height: "100vh",
