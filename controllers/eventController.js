@@ -21,14 +21,32 @@ exports.getEventById = async (req, res) => {
 
 exports.createEvent = async (req, res) => {
   try {
-    const { title, description, date, location, totalTickets, price } = req.body;
+    const {
+      title,
+      description,
+      date,
+      location,
+      totalTickets,
+      ticketPricing,
+      remainingTickets,
+      organizer, 
+    } = req.body;
+
     const newEvent = new Event({
-      title, description, date, location, totalTickets, price,
-      organizer: req.user._id
+      title,
+      description,
+      date,
+      location,
+      totalTickets,
+      ticketPricing,
+      remainingTickets,
+      organizer: organizer || req.user._id, 
     });
+
     await newEvent.save();
     res.status(201).json(newEvent);
   } catch (err) {
+    console.error("❌ Event creation error:", err.message);
     res.status(400).json({ message: err.message });
   }
 };

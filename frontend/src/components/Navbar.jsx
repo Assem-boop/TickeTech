@@ -11,61 +11,49 @@ const Navbar = () => {
     navigate("/login");
   };
 
+  const role = user?.role?.toLowerCase(); // normalize role
+
   return (
     <nav
       style={{
         padding: "1rem 2rem",
         display: "flex",
         justifyContent: "space-between",
+        alignItems: "center",
         borderBottom: "1px solid #ccc",
         backgroundColor: "#f8f8f8",
       }}
     >
       <div>
-        <Link to="/" style={{ textDecoration: "none", fontWeight: "bold" }}>
+        <Link to="/" style={{ textDecoration: "none", fontWeight: "bold", fontSize: "20px" }}>
           TickeTech
         </Link>
       </div>
-      <div>
-        <Link to="/" style={{ marginRight: "1rem" }}>
-          Home
-        </Link>
+
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <Link to="/">Home</Link>
 
         {!user && (
           <>
-            <Link to="/login" style={{ marginRight: "1rem" }}>
-              Login
-            </Link>
+            <Link to="/login">Login</Link>
             <Link to="/register">Register</Link>
           </>
         )}
 
         {user && (
           <>
-            {user.role === "Admin" && (
-              <Link to="/admin-dashboard" style={{ marginRight: "1rem" }}>
-                Admin Panel
-              </Link>
-            )}
-            {user.role === "Organizer" && (
-              <Link to="/organizer-dashboard" style={{ marginRight: "1rem" }}>
-                My Events
-              </Link>
-            )}
-            {user.role === "Standard" && (
-              <Link to="/bookings" style={{ marginRight: "1rem" }}>
-                My Bookings
-              </Link>
-            )}
+            {role === "admin" && <Link to="/admin-dashboard">Admin Panel</Link>}
+            {role === "organizer" && <Link to="/organizer-dashboard">My Events</Link>}
+            {role === "standard" && <Link to="/bookings">My Bookings</Link>}
 
             <button
               onClick={handleLogout}
               style={{
-                background: "transparent",
+                background: "none",
                 border: "none",
                 color: "red",
-                cursor: "pointer",
                 fontWeight: "bold",
+                cursor: "pointer",
               }}
             >
               Logout

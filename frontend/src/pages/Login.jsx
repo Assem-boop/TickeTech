@@ -19,17 +19,23 @@ const Login = () => {
       const res = await axios.post("/api/v1/login", formData);
       const { token, user } = res.data;
 
-      // Save to localStorage
+      // ✅ Save to localStorage correctly
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(user)); // stringified!
 
-      // Redirect based on role
-      if (user.role === "Admin") {
+      console.log("✅ Logged in user:", user);
+
+      // ✅ Redirect based on role
+      const role = user.role?.toLowerCase();
+
+      if (role === "admin") {
         navigate("/admin-dashboard");
-      } else if (user.role === "Organizer") {
+      } else if (role === "organizer") {
         navigate("/organizer-dashboard");
-      } else if (user.role === "Standard") {
+      } else if (role === "standard") {
         navigate("/bookings");
+      } else {
+        setError("Unknown role. Access denied.");
       }
       
     } catch (err) {

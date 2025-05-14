@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+// Pages
 import Homepage from "./pages/Homepage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -7,6 +9,9 @@ import AdminDashboard from "./pages/AdminDashboard";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
 import Bookings from "./pages/Bookings";
 import CreateEvent from "./pages/CreateEvent";
+import EditEvent from "./pages/EditEvent";
+
+// Components
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/RoleRoute";
@@ -58,6 +63,16 @@ function App() {
             <ProtectedRoute>
               <RoleRoute allowedRoles={["Organizer"]}>
                 <CreateEvent />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/edit-event/:id"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Organizer"]}>
+                <EditEvent />
               </RoleRoute>
             </ProtectedRoute>
           }
