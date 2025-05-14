@@ -31,7 +31,7 @@ const EditEvent = () => {
         setFormData({
           title,
           description,
-          date: new Date(date).toISOString().slice(0, 16),
+          date: date.slice(0, 16), 
           location,
           totalTickets,
           ticketPricing,
