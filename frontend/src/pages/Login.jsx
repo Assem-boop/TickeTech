@@ -67,6 +67,11 @@ const Login = () => {
               required
               style={inputStyle}
             />
+            <p style={linkWrapper}>
+              <a href="/forgot-password" style={linkStyle}>
+                Forgot Password?
+              </a>
+            </p>
           </div>
           <button type="submit" style={buttonStyle}>
             Login
@@ -121,6 +126,18 @@ const inputStyle = {
   color: "white",
   outline: "none",
   boxSizing: "border-box",
+};
+
+const linkWrapper = {
+  textAlign: "right",
+  marginTop: "0.3rem",
+  marginBottom: "1rem",
+};
+
+const linkStyle = {
+  fontSize: "0.95rem",
+  color: "#00bcd4",
+  textDecoration: "none",
 };
 
 const buttonStyle = {
