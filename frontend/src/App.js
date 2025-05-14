@@ -10,6 +10,9 @@ import OrganizerDashboard from "./pages/OrganizerDashboard";
 import Bookings from "./pages/Bookings";
 import CreateEvent from "./pages/CreateEvent";
 import EditEvent from "./pages/EditEvent";
+import SendOtp from "./pages/SendOtp";            // ✅ New
+import VerifyOtp from "./pages/VerifyOtp";        // ✅ New (you’ll get the file next)
+import ResetPassword from "./pages/ResetPassword"; // ✅ New (you’ll get the file after that)
 
 // Components
 import Navbar from "./components/Navbar";
@@ -25,6 +28,9 @@ function App() {
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<SendOtp />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Protected + Role-Based Routes */}
         <Route
