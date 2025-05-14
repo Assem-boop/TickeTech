@@ -12,12 +12,28 @@ exports.getAllEvents = async (req, res) => {
 exports.getEventById = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
-    if (!event || event.status !== "approved") return res.status(404).json({ message: "Event not found" });
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Allow access if:
+    // - event is approved
+    // - OR logged-in user is the organizer
+    const isOwner = req.user && event.organizer.toString() === req.user.id;
+    const isApproved = event.status === "approved";
+
+    if (!isApproved && !isOwner) {
+      return res.status(403).json({ message: "Not authorized to view this event" });
+    }
+
     res.json(event);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("❌ Error in getEventById:", err.message);
+    res.status(500).json({ message: "Server error" });
   }
 };
+
 
 exports.createEvent = async (req, res) => {
   try {
@@ -57,16 +73,23 @@ exports.updateEvent = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ message: "Event not found" });
-    if (event.organizer.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+
+    if (
+      event.organizer.toString() !== req.user.id.toString() &&
+      req.user.role.toLowerCase() !== "admin"
+    ) {
       return res.status(403).json({ message: "Not authorized" });
     }
+
     Object.assign(event, req.body);
     await event.save();
     res.json(event);
   } catch (err) {
+    console.error("❌ Update Event Error:", err.message);
     res.status(400).json({ message: err.message });
   }
 };
+
 
 exports.deleteEvent = async (req, res) => {
   try {
