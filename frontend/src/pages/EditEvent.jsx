@@ -18,6 +18,7 @@ const EditEvent = () => {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(true); // ✅ controls initial form rendering
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -27,18 +28,23 @@ const EditEvent = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+
         const { title, description, date, location, totalTickets, ticketPricing } = res.data;
+
         setFormData({
           title,
           description,
-          date: date.slice(0, 16), 
+          date: date.slice(0, 16), // ✅ prevents timezone shift and keeps format
           location,
           totalTickets,
           ticketPricing,
         });
+
+        setLoading(false); // ✅ show form only when data is ready
       } catch (err) {
         console.error("Error fetching event:", err);
         setError("Failed to load event. Please try again later.");
+        setLoading(false);
       }
     };
 
@@ -70,6 +76,14 @@ const EditEvent = () => {
       setError(err.response?.data?.message || "Update failed.");
     }
   };
+
+  if (loading) {
+    return (
+      <div style={{ padding: "2rem", textAlign: "center" }}>
+        <p>Loading event...</p>
+      </div>
+    );
+  }
 
   return (
     <div style={{ maxWidth: "600px", margin: "auto", padding: "2rem" }}>
