@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/axiosConfig"; // ✅ your axios instance
 import {
   BarChart,
   Bar,
@@ -16,16 +16,15 @@ const OrganizerDashboard = () => {
   const [analytics, setAnalytics] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
   const token = localStorage.getItem("token");
 
   const fetchData = async () => {
     try {
-      const eventsRes = await axios.get("/api/v1/users/events", {
+      const eventsRes = await api.get("/api/v1/users/events", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const analyticsRes = await axios.get("/api/v1/users/events/analytics", {
+      const analyticsRes = await api.get("/api/v1/users/events/analytics", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -43,13 +42,13 @@ const OrganizerDashboard = () => {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`/api/v1/events/${eventId}`, {
+      await api.delete(`/api/v1/events/${eventId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEvents(events.filter((e) => e._id !== eventId));
     } catch (err) {
+      console.error("❌ Failed to delete event:", err.response?.data || err.message);
       alert("Failed to delete event.");
-      console.error(err);
     }
   };
 
@@ -78,7 +77,7 @@ const OrganizerDashboard = () => {
         </button>
       </div>
 
-      <p>Welcome, Organizer! Here's an overview of your events:</p>
+      <p>Welcome! Here's an overview of your events:</p>
 
       <h2 style={{ marginTop: "2rem" }}>Your Events</h2>
       {events.length === 0 ? (

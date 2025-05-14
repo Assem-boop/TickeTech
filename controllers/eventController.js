@@ -29,7 +29,7 @@ exports.createEvent = async (req, res) => {
       totalTickets,
       ticketPricing,
       remainingTickets,
-      organizer, 
+      organizer,
     } = req.body;
 
     const newEvent = new Event({
@@ -40,16 +40,18 @@ exports.createEvent = async (req, res) => {
       totalTickets,
       ticketPricing,
       remainingTickets,
-      organizer: organizer || req.user._id, 
+      organizer: organizer || req.user._id,
     });
 
-    await newEvent.save();
-    res.status(201).json(newEvent);
+    const savedEvent = await newEvent.save();
+    console.log("✅ Event saved successfully:", savedEvent);
+    res.status(201).json(savedEvent); 
   } catch (err) {
     console.error("❌ Event creation error:", err.message);
     res.status(400).json({ message: err.message });
   }
 };
+
 
 exports.updateEvent = async (req, res) => {
   try {
@@ -65,20 +67,36 @@ exports.updateEvent = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
 exports.deleteEvent = async (req, res) => {
   try {
+    console.log("🧠 DELETE request from:", req.user);
     const event = await Event.findById(req.params.id);
-    if (!event) return res.status(404).json({ message: "Event not found" });
-    if (event.organizer.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+
+    if (!event) {
+      console.warn("⚠️ Event not found:", req.params.id);
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    console.log("🗑️ Attempting to delete event:", event._id);
+    console.log("🛡️ Organizer of event:", event.organizer);
+    console.log("🔐 Requester:", req.user.id);
+
+    if (
+      event.organizer.toString() !== req.user.id.toString() &&
+      req.user.role.toLowerCase() !== "admin"
+    ) {
+      console.warn("⛔ Unauthorized delete attempt");
       return res.status(403).json({ message: "Not authorized" });
     }
+
     await event.deleteOne();
-    res.json({ message: "Event deleted" });
+    res.json({ message: "Event deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("❌ DELETE ERROR:", err.message);
+    res.status(500).json({ message: "Server error while deleting event" });
   }
 };
-
 
 exports.updateStatus = async (req, res) => {
   try {

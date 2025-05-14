@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api/axiosConfig";
 import { useNavigate, useParams } from "react-router-dom";
 
 const EditEvent = () => {
@@ -13,7 +13,7 @@ const EditEvent = () => {
     date: "",
     location: "",
     totalTickets: "",
-    price: "",
+    ticketPricing: "",
   });
 
   const [error, setError] = useState("");
@@ -22,24 +22,19 @@ const EditEvent = () => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const res = await axios.get(`/api/v1/events/${id}`);
-        const { title, description, date, location, totalTickets, price } = res.data;
-
-        let formattedDate = "";
-        if (date) {
-          const parsed = new Date(date);
-          if (!isNaN(parsed)) {
-            formattedDate = parsed.toISOString().slice(0, 16);
-          }
-        }
-
+        const res = await api.get(`/api/v1/events/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const { title, description, date, location, totalTickets, ticketPricing } = res.data;
         setFormData({
-          title: title || "",
-          description: description || "",
-          date: formattedDate,
-          location: location || "",
-          totalTickets: totalTickets || "",
-          price: price || "",
+          title,
+          description,
+          date: new Date(date).toISOString().slice(0, 16),
+          location,
+          totalTickets,
+          ticketPricing,
         });
       } catch (err) {
         console.error("Error fetching event:", err);
@@ -48,11 +43,11 @@ const EditEvent = () => {
     };
 
     fetchEvent();
-  }, [id]);
+  }, [id, token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if ((name === "totalTickets" || name === "price") && isNaN(value)) return;
+    if ((name === "totalTickets" || name === "ticketPricing") && isNaN(value)) return;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -62,13 +57,16 @@ const EditEvent = () => {
     setSuccess("");
 
     try {
-      await axios.put(`/api/v1/events/${id}`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
+      await api.put(`/api/v1/events/${id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       setSuccess("✅ Event updated successfully!");
       setTimeout(() => navigate("/organizer-dashboard"), 1500);
     } catch (err) {
+      console.error("❌ Update error:", err.response?.data || err);
       setError(err.response?.data?.message || "Update failed.");
     }
   };
@@ -77,7 +75,7 @@ const EditEvent = () => {
     <div style={{ maxWidth: "600px", margin: "auto", padding: "2rem" }}>
       <h2>Edit Event</h2>
       <form onSubmit={handleSubmit}>
-        {["title", "description", "location", "date", "totalTickets", "price"].map((field) => (
+        {["title", "description", "location", "date", "totalTickets", "ticketPricing"].map((field) => (
           <input
             key={field}
             type={field === "date" ? "datetime-local" : "text"}

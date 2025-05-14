@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/axiosConfig"; 
 
 const Homepage = () => {
   const [events, setEvents] = useState([]);
