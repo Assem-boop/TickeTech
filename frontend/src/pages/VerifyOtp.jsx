@@ -1,13 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../api/axiosConfig";
 import { useNavigate } from "react-router-dom";
 
 const VerifyOtp = () => {
   const navigate = useNavigate();
-  const email = localStorage.getItem("otpEmail") || "";
   const [otp, setOtp] = useState("");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("otpEmail");
+    if (!savedEmail) {
+      setError("No email found. Please restart the process.");
+    } else {
+      setEmail(savedEmail);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,8 +26,9 @@ const VerifyOtp = () => {
     try {
       await api.post("/api/v1/forgot-password/verify-otp", {
         email,
-        otp,
+        code: otp,
       });
+
       setSuccess("✅ OTP verified successfully!");
       setTimeout(() => navigate("/reset-password"), 1500);
     } catch (err) {
@@ -31,7 +41,7 @@ const VerifyOtp = () => {
       <div style={glassBox}>
         <h2 style={titleStyle}>Enter OTP</h2>
         <p style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-          A 6-digit code was sent to your email
+          A 6-digit code was sent to <strong>{email || "your email"}</strong>
         </p>
         <form onSubmit={handleSubmit}>
           <input

@@ -15,10 +15,14 @@ const SendOtp = () => {
 
     try {
       const res = await api.post("/api/v1/forgot-password/send-otp", { email });
-      localStorage.setItem("otpEmail", email); // Save for next step
+
+      // ✅ Store for later steps
+      localStorage.setItem("otpEmail", email);
+
       setSuccess("✅ OTP sent to your email.");
       setTimeout(() => navigate("/verify-otp"), 1500);
     } catch (err) {
+      console.error("Send OTP Error:", err);
       setError(err.response?.data?.message || "Failed to send OTP.");
     }
   };
@@ -50,7 +54,7 @@ const SendOtp = () => {
   );
 };
 
-// ✨ Styles
+// 🎨 Reuse styles
 const pageStyle = {
   height: "100vh",
   background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
