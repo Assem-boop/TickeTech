@@ -1,19 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../api/axiosConfig";
 import { useNavigate } from "react-router-dom";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
-  const email = localStorage.getItem("otpEmail") || "";
+
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState(""); // 🔑 Required for backend
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("otpEmail");
+    if (!savedEmail) {
+      setError("Missing email. Please restart the process.");
+    } else {
+      setEmail(savedEmail);
+    }
+  }, []);
 
   const handleReset = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+
+    if (!otp || !email || !password) {
+      setError("All fields are required.");
+      return;
+    }
 
     if (password !== confirm) {
       setError("Passwords do not match.");
@@ -23,9 +39,11 @@ const ResetPassword = () => {
     try {
       await api.put("/api/v1/forgot-password/reset-password", {
         email,
+        code: otp, // 🔑 Required
         newPassword: password,
       });
-      setSuccess("✅ Password reset! Redirecting to login...");
+
+      setSuccess("✅ Password reset! Redirecting...");
       localStorage.removeItem("otpEmail");
       setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
@@ -38,6 +56,14 @@ const ResetPassword = () => {
       <div style={glassBox}>
         <h2 style={titleStyle}>Set New Password</h2>
         <form onSubmit={handleReset}>
+          <input
+            type="text"
+            placeholder="Enter OTP again"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            required
+            style={inputStyle}
+          />
           <input
             type="password"
             placeholder="New Password"
@@ -65,6 +91,7 @@ const ResetPassword = () => {
   );
 };
 
+// 🎨 Styles remain the same (reuse from previous pages)
 const pageStyle = {
   height: "100vh",
   background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
