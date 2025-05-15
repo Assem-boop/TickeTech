@@ -13,7 +13,9 @@ import EditEvent from "./pages/EditEvent";
 import SendOtp from "./pages/SendOtp";
 import VerifyOtp from "./pages/VerifyOtp";
 import ResetPassword from "./pages/ResetPassword";
-import UserProfile from "./pages/UserProfile"; // ✅ NEW
+import UserProfile from "./pages/UserProfile";
+import UserDetails from "./pages/UserDetails";
+import AdminUsersPage from "./pages/AdminUsersPage"; // ✅ NEW
 
 // Components
 import Navbar from "./components/Navbar";
@@ -33,7 +35,7 @@ function App() {
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        {/* Authenticated User Profile */}
+        {/* Authenticated Profile */}
         <Route
           path="/profile"
           element={
@@ -43,7 +45,31 @@ function App() {
           }
         />
 
-        {/* Protected Role-Based Routes */}
+        {/* Admin: View All Users */}
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Admin"]}>
+                <AdminUsersPage />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin: View User by ID */}
+        <Route
+          path="/admin/user/:id"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Admin"]}>
+                <UserDetails />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Role-Based Protected Routes */}
         <Route
           path="/admin-dashboard"
           element={
