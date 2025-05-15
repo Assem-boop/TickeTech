@@ -46,6 +46,9 @@ const Navbar = () => {
             {role === "organizer" && <Link to="/organizer-dashboard">My Events</Link>}
             {role === "standard" && <Link to="/bookings">My Bookings</Link>}
 
+            {/* ✅ My Profile Link */}
+            <Link to="/profile">My Profile</Link>
+
             <button
               onClick={handleLogout}
               style={{
