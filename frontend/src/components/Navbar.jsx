@@ -41,6 +41,7 @@ const Navbar = () => {
 
         {user && (
           <>
+            {/* Admin Navigation */}
             {role === "admin" && (
               <>
                 <Link to="/admin-dashboard">Admin Panel</Link>
@@ -48,6 +49,7 @@ const Navbar = () => {
               </>
             )}
 
+            {/* Organizer Navigation */}
             {role === "organizer" && (
               <>
                 <Link to="/organizer-dashboard">Dashboard</Link>
@@ -55,10 +57,12 @@ const Navbar = () => {
               </>
             )}
 
+            {/* Standard User Navigation */}
             {role === "standard" && (
               <Link to="/bookings">My Bookings</Link>
             )}
 
+            {/* Shared */}
             <Link to="/profile">My Profile</Link>
 
             <button

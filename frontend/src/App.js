@@ -48,6 +48,16 @@ function App() {
 
         {/* Admin Routes */}
         <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Admin"]}>
+                <AdminDashboard />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/admin/users"
           element={
             <ProtectedRoute>
@@ -63,16 +73,6 @@ function App() {
             <ProtectedRoute>
               <RoleRoute allowedRoles={["Admin"]}>
                 <UserDetails />
-              </RoleRoute>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin-dashboard"
-          element={
-            <ProtectedRoute>
-              <RoleRoute allowedRoles={["Admin"]}>
-                <AdminDashboard />
               </RoleRoute>
             </ProtectedRoute>
           }
