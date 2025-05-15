@@ -1,156 +1,114 @@
-import React, { useEffect, useState } from "react";
-import api from "../api/axiosConfig"; // ✅ your axios instance
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  ResponsiveContainer,
-} from "recharts";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const OrganizerDashboard = () => {
-  const [events, setEvents] = useState([]);
-  const [analytics, setAnalytics] = useState([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-
-  const fetchData = async () => {
-    try {
-      const eventsRes = await api.get("/api/v1/users/events", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const analyticsRes = await api.get("/api/v1/users/events/analytics", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setEvents(eventsRes.data);
-      setAnalytics(analyticsRes.data);
-    } catch (err) {
-      console.error("Error fetching organizer data", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (eventId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this event?");
-    if (!confirmDelete) return;
-
-    try {
-      await api.delete(`/api/v1/events/${eventId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setEvents(events.filter((e) => e._id !== eventId));
-    } catch (err) {
-      console.error("❌ Failed to delete event:", err.response?.data || err.message);
-      alert("Failed to delete event.");
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  if (loading) return <p style={{ padding: "2rem" }}>Loading organizer data...</p>;
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Organizer Dashboard</h1>
-        <button
-          onClick={() => navigate("/create-event")}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#28a745",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          + Create Event
-        </button>
-      </div>
+    <div style={pageStyle}>
+      <div style={glassBox}>
+        <h2 style={titleStyle}>🚀 Welcome, Organizer</h2>
+        <p style={descStyle}>
+          Manage your events, track performance, and shape the future of entertainment.
+        </p>
 
-      <p>Welcome! Here's an overview of your events:</p>
-
-      <h2 style={{ marginTop: "2rem" }}>Your Events</h2>
-      {events.length === 0 ? (
-        <p>No events posted yet.</p>
-      ) : (
-        <ul>
-          {events.map((event) => (
-            <li key={event._id} style={{ marginBottom: "1.5rem", borderBottom: "1px solid #ccc", paddingBottom: "1rem" }}>
-              <strong>{event.title}</strong> <br />
-              Date: {event.date ? new Date(event.date).toLocaleDateString() : "N/A"} <br />
-              Location: {event.location || "N/A"} <br />
-              Tickets: {event.totalTickets || 0} <br />
-              Status: {event.status || "Pending"} <br />
-
-              <button
-                onClick={() => navigate(`/edit-event/${event._id}`)}
-                style={{
-                  marginRight: "1rem",
-                  padding: "5px 10px",
-                  backgroundColor: "#007bff",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
-              >
-                Edit
-              </button>
-
-              <button
-                onClick={() => handleDelete(event._id)}
-                style={{
-                  padding: "5px 10px",
-                  backgroundColor: "#dc3545",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <h2 style={{ marginTop: "2rem" }}>Event Analytics</h2>
-      {analytics && analytics.length > 0 && analytics.some((a) => a.bookedPercentage > 0) ? (
-        <div
-          style={{
-            height: "300px",
-            marginTop: "1rem",
-            backgroundColor: "#f0f0f0",
-            padding: "1rem",
-            borderRadius: "8px",
-          }}
-        >
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={analytics}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="eventTitle" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="bookedPercentage" fill="#8884d8" />
-            </BarChart>
-          </ResponsiveContainer>
+        <div style={gridContainer}>
+          <DashboardCard
+            title="Create New Event"
+            subtitle="Launch a new experience"
+            icon="🆕"
+            onClick={() => navigate("/create-event")}
+          />
+          <DashboardCard
+            title="My Events"
+            subtitle="View & edit your listings"
+            icon="📄"
+            onClick={() => navigate("/organizer-my-events")}
+          />
+          <DashboardCard
+            title="Analytics"
+            subtitle="Understand your performance"
+            icon="📊"
+            onClick={() => navigate("/organizer-analytics")}
+          />
         </div>
-      ) : (
-        <p>No analytics available yet.</p>
-      )}
+      </div>
     </div>
   );
+};
+
+const DashboardCard = ({ title, subtitle, icon, onClick }) => (
+  <div style={cardStyle} onClick={onClick}>
+    <div style={iconStyle}>{icon}</div>
+    <h3 style={cardTitle}>{title}</h3>
+    <p style={cardSubtitle}>{subtitle}</p>
+  </div>
+);
+
+// 💎 Styles
+const pageStyle = {
+  height: "100vh",
+  background: "linear-gradient(to right, #141e30, #243b55)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  padding: "2rem",
+};
+
+const glassBox = {
+  background: "rgba(255, 255, 255, 0.06)",
+  backdropFilter: "blur(10px)",
+  borderRadius: "20px",
+  padding: "3rem",
+  width: "100%",
+  maxWidth: "1000px",
+  boxShadow: "0 0 40px rgba(0,0,0,0.4)",
+  border: "1px solid rgba(255,255,255,0.2)",
+  color: "white",
+  textAlign: "center",
+};
+
+const titleStyle = {
+  fontSize: "2rem",
+  marginBottom: "0.5rem",
+};
+
+const descStyle = {
+  fontSize: "1rem",
+  color: "#aaa",
+  marginBottom: "2.5rem",
+};
+
+const gridContainer = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+  gap: "1.5rem",
+};
+
+const cardStyle = {
+  background: "rgba(255, 255, 255, 0.07)",
+  padding: "1.5rem",
+  borderRadius: "16px",
+  border: "1px solid rgba(255,255,255,0.2)",
+  cursor: "pointer",
+  transition: "all 0.3s ease",
+  textAlign: "center",
+  boxShadow: "0 0 20px rgba(0, 0, 0, 0.2)",
+};
+const iconStyle = {
+  fontSize: "2rem",
+  marginBottom: "0.7rem",
+};
+
+const cardTitle = {
+  fontSize: "1.3rem",
+  fontWeight: "bold",
+  marginBottom: "0.3rem",
+};
+
+const cardSubtitle = {
+  fontSize: "0.9rem",
+  color: "#ccc",
 };
 
 export default OrganizerDashboard;

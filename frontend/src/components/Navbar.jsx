@@ -4,14 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 const Navbar = () => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
+  const role = user?.role?.toLowerCase();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
   };
-
-  const role = user?.role?.toLowerCase(); // normalize role
 
   return (
     <nav
@@ -42,11 +41,24 @@ const Navbar = () => {
 
         {user && (
           <>
-            {role === "admin" && <Link to="/admin-dashboard">Admin Panel</Link>}
-            {role === "organizer" && <Link to="/organizer-dashboard">My Events</Link>}
-            {role === "standard" && <Link to="/bookings">My Bookings</Link>}
+            {role === "admin" && (
+              <>
+                <Link to="/admin-dashboard">Admin Panel</Link>
+                <Link to="/admin/users">Manage Users</Link>
+              </>
+            )}
 
-            {/* ✅ My Profile Link */}
+            {role === "organizer" && (
+              <>
+                <Link to="/organizer-dashboard">Dashboard</Link>
+                <Link to="/organizer-my-events">My Events</Link>
+              </>
+            )}
+
+            {role === "standard" && (
+              <Link to="/bookings">My Bookings</Link>
+            )}
+
             <Link to="/profile">My Profile</Link>
 
             <button

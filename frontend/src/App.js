@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/AdminDashboard";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
+import OrganizerMyEvents from "./pages/OrganizerMyEvents";
 import Bookings from "./pages/Bookings";
 import CreateEvent from "./pages/CreateEvent";
 import EditEvent from "./pages/EditEvent";
@@ -15,7 +16,7 @@ import VerifyOtp from "./pages/VerifyOtp";
 import ResetPassword from "./pages/ResetPassword";
 import UserProfile from "./pages/UserProfile";
 import UserDetails from "./pages/UserDetails";
-import AdminUsersPage from "./pages/AdminUsersPage"; // ✅ NEW
+import AdminUsersPage from "./pages/AdminUsersPage";
 
 // Components
 import Navbar from "./components/Navbar";
@@ -45,7 +46,7 @@ function App() {
           }
         />
 
-        {/* Admin: View All Users */}
+        {/* Admin Routes */}
         <Route
           path="/admin/users"
           element={
@@ -56,8 +57,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
-        {/* Admin: View User by ID */}
         <Route
           path="/admin/user/:id"
           element={
@@ -68,8 +67,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
-        {/* Role-Based Protected Routes */}
         <Route
           path="/admin-dashboard"
           element={
@@ -80,6 +77,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Organizer Routes */}
         <Route
           path="/organizer-dashboard"
           element={
@@ -91,11 +90,11 @@ function App() {
           }
         />
         <Route
-          path="/bookings"
+          path="/organizer-my-events"
           element={
             <ProtectedRoute>
-              <RoleRoute allowedRoles={["Standard"]}>
-                <Bookings />
+              <RoleRoute allowedRoles={["Organizer"]}>
+                <OrganizerMyEvents />
               </RoleRoute>
             </ProtectedRoute>
           }
@@ -116,6 +115,18 @@ function App() {
             <ProtectedRoute>
               <RoleRoute allowedRoles={["Organizer"]}>
                 <EditEvent />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Standard User */}
+        <Route
+          path="/bookings"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Standard"]}>
+                <Bookings />
               </RoleRoute>
             </ProtectedRoute>
           }

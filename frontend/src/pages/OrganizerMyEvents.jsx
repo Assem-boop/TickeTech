@@ -1,79 +1,66 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api/axiosConfig";
 
-const Bookings = () => {
-  const [bookings, setBookings] = useState([]);
+const OrganizerMyEvents = () => {
+  const [events, setEvents] = useState([]);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchBookings();
+    api
+      .get("/api/v1/users/events", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((res) => setEvents(res.data))
+      .catch(() => setError("Failed to load your events"));
   }, []);
 
-  const fetchBookings = async () => {
-    try {
-      const res = await api.get("/api/v1/users/bookings", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      setBookings(res.data);
-    } catch (err) {
-      setError("Failed to load your bookings.");
-    }
-  };
-
-  const handleCancel = async (id) => {
-    const confirm = window.confirm("Are you sure you want to cancel this booking?");
-    if (!confirm) return;
-
-    try {
-      await api.delete(`/api/v1/bookings/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      setBookings((prev) => prev.filter((b) => b._id !== id));
-    } catch {
-      alert("❌ Could not cancel booking.");
-    }
-  };
+  const handleEdit = (id) => navigate(`/edit-event/${id}`);
 
   return (
     <div style={pageStyle}>
       <div style={glassBox}>
-        <h2 style={titleStyle}>My Bookings</h2>
+        <h2 style={titleStyle}>My Events</h2>
         {error && <p style={errorStyle}>{error}</p>}
 
-        {bookings.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#aaa" }}>No bookings yet.</p>
+        {events.length === 0 ? (
+          <p style={{ textAlign: "center", color: "#ccc" }}>You haven’t created any events yet.</p>
         ) : (
           <div style={{ overflowX: "auto" }}>
             <table style={tableStyle}>
               <thead>
                 <tr>
-                  <th style={thStyle}>Event</th>
+                  <th style={thStyle}>Title</th>
                   <th style={thStyle}>Date</th>
                   <th style={thStyle}>Location</th>
                   <th style={thStyle}>Tickets</th>
-                  <th style={thStyle}>Total</th>
+                  <th style={thStyle}>Price</th>
                   <th style={thStyle}>Status</th>
                   <th style={thStyle}>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {bookings.map((booking) => (
-                  <tr key={booking._id}>
-                    <td style={tdStyle}>{booking.event?.title}</td>
+                {events.map((event) => (
+                  <tr key={event._id}>
+                    <td style={tdStyle}>{event.title}</td>
                     <td style={tdStyle}>
-                      {new Date(booking.event?.date).toLocaleDateString()}
+                      {new Date(event.date).toLocaleDateString()}
                     </td>
-                    <td style={tdStyle}>{booking.event?.location}</td>
-                    <td style={tdStyle}>{booking.quantity}</td>
-                    <td style={tdStyle}>${booking.totalPrice}</td>
-                    <td style={tdStyle}>{booking.status || "Confirmed"}</td>
+                    <td style={tdStyle}>{event.location}</td>
+                    <td style={tdStyle}>{event.totalTickets}</td>
+                    <td style={tdStyle}>${event.ticketPricing}</td>
                     <td style={tdStyle}>
-                      <button style={cancelBtn} onClick={() => handleCancel(booking._id)}>
-                        Cancel
+                      <span style={badgeStyle(event.status)}>{event.status}</span>
+                    </td>
+                    <td style={tdStyle}>
+                      <button
+                        style={editBtn}
+                        onClick={() => handleEdit(event._id)}
+                      >
+                        Edit
                       </button>
                     </td>
                   </tr>
@@ -87,7 +74,7 @@ const Bookings = () => {
   );
 };
 
-// 💅 Styles
+// 🎨 Styles
 const pageStyle = {
   minHeight: "100vh",
   background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
@@ -134,14 +121,29 @@ const tdStyle = {
   borderBottom: "1px solid #444",
 };
 
-const cancelBtn = {
+const editBtn = {
   padding: "6px 10px",
-  backgroundColor: "#e53935",
-  color: "white",
+  backgroundColor: "#ffc107",
+  color: "#000",
   border: "none",
   borderRadius: "5px",
   cursor: "pointer",
 };
+
+const badgeStyle = (status) => ({
+  padding: "6px 10px",
+  borderRadius: "20px",
+  fontSize: "0.8rem",
+  fontWeight: "bold",
+  textTransform: "capitalize",
+  backgroundColor:
+    status === "approved"
+      ? "#4caf50"
+      : status === "pending"
+      ? "#ffa726"
+      : "#e53935",
+  color: "#fff",
+});
 
 const errorStyle = {
   color: "#ff4f4f",
@@ -150,4 +152,4 @@ const errorStyle = {
   marginBottom: "1rem",
 };
 
-export default Bookings;
+export default OrganizerMyEvents;

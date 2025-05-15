@@ -4,8 +4,8 @@ import api from "../api/axiosConfig";
 
 const AdminUsersPage = () => {
   const [users, setUsers] = useState([]);
+  const [messages, setMessages] = useState({});
   const [error, setError] = useState("");
-  const [messages, setMessages] = useState({}); // Per user
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,6 +48,27 @@ const AdminUsersPage = () => {
       setMessages((prev) => ({
         ...prev,
         [id]: err.response?.data?.message || "❌ Update failed.",
+      }));
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const confirm = window.confirm("Are you sure you want to delete this user?");
+    if (!confirm) return;
+
+    try {
+      await api.delete(`/api/v1/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setUsers((prev) => prev.filter((u) => u._id !== id));
+      setMessages((prev) => ({ ...prev, [id]: "🗑️ User deleted" }));
+      setTimeout(() => setMessages((prev) => ({ ...prev, [id]: "" })), 2000);
+    } catch (err) {
+      setMessages((prev) => ({
+        ...prev,
+        [id]: err.response?.data?.message || "❌ Deletion failed.",
       }));
     }
   };
@@ -96,6 +117,9 @@ const AdminUsersPage = () => {
                     >
                       Update
                     </button>
+                    <button style={deleteBtn} onClick={() => handleDelete(user._id)}>
+                      Delete
+                    </button>
                     {messages[user._id] && (
                       <span style={messageStyle}>{messages[user._id]}</span>
                     )}
@@ -110,9 +134,9 @@ const AdminUsersPage = () => {
   );
 };
 
-// 🎨 Styles
+// 🖌 Styles
 const pageStyle = {
-  height: "100vh",
+  minHeight: "100vh",
   background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
   display: "flex",
   justifyContent: "center",
@@ -181,6 +205,16 @@ const updateBtn = {
   padding: "6px 10px",
   backgroundColor: "#ffc107",
   color: "#000",
+  border: "none",
+  borderRadius: "5px",
+  marginRight: "6px",
+  cursor: "pointer",
+};
+
+const deleteBtn = {
+  padding: "6px 10px",
+  backgroundColor: "#e53935",
+  color: "white",
   border: "none",
   borderRadius: "5px",
   cursor: "pointer",
