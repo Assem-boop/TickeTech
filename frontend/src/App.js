@@ -18,8 +18,9 @@ import ResetPassword from "./pages/ResetPassword";
 import UserProfile from "./pages/UserProfile";
 import UserDetails from "./pages/UserDetails";
 import AdminUsersPage from "./pages/AdminUsersPage";
-import AdminEventsPage from "./pages/AdminEventsPage"; // ✅ NEW
-import EventDetails from "./pages/EventDetails"; // ✅ For viewing event detail (public+users)
+import AdminEventsPage from "./pages/AdminEventsPage";
+import EventDetails from "./pages/EventDetails";
+import AllEventsPage from "./pages/AllEventsPage"; // ✅ NEW
 
 // Components
 import Navbar from "./components/Navbar";
@@ -38,6 +39,7 @@ function App() {
         <Route path="/forgot-password" element={<SendOtp />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/events" element={<AllEventsPage />} /> {/* ✅ NEW */}
         <Route path="/events/:id" element={<EventDetails />} />
 
         {/* 👤 Authenticated Profile */}
