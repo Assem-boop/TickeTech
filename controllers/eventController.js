@@ -1,4 +1,5 @@
 const Event = require("../models/Event");
+const jwt = require("jsonwebtoken");
 
 exports.getAllEvents = async (req, res) => {
   try {
@@ -9,15 +10,33 @@ exports.getAllEvents = async (req, res) => {
   }
 };
 
+exports.getApprovedEvents = async (req, res) => {
+  try {
+    const events = await Event.find({ status: "approved" });
+    res.status(200).json({ success: true, count: events.length, data: events });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
 exports.getEventById = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
+    if (!event) return res.status(404).json({ message: "Event not found" });
 
-    if (!event) {
-      return res.status(404).json({ message: "Event not found" });
+    const authHeader = req.headers.authorization;
+    let decoded = null;
+
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
+      } catch {
+        decoded = null;
+      }
     }
 
-    const isOwner = req.user && event.organizer.toString() === req.user.id;
+    const isOwner = decoded && event.organizer.toString() === decoded.id;
     const isApproved = event.status === "approved";
 
     if (!isApproved && !isOwner) {
@@ -53,12 +72,12 @@ exports.createEvent = async (req, res) => {
       ticketPricing,
       remainingTickets,
       organizer: organizer || req.user._id,
-      status: "pending", // ✅ Always set to "pending"
+      status: "pending", // 👈 Always starts as pending
     });
 
     const savedEvent = await newEvent.save();
     console.log("✅ Event saved successfully:", savedEvent);
-    res.status(201).json(savedEvent); 
+    res.status(201).json(savedEvent);
   } catch (err) {
     console.error("❌ Event creation error:", err.message);
     res.status(400).json({ message: err.message });
@@ -77,7 +96,6 @@ exports.updateEvent = async (req, res) => {
       return res.status(403).json({ message: "Not authorized" });
     }
 
-    // Prevent status override unless Admin
     const isAdmin = req.user.role.toLowerCase() === "admin";
     const { status, ...otherUpdates } = req.body;
 
@@ -97,23 +115,13 @@ exports.updateEvent = async (req, res) => {
 
 exports.deleteEvent = async (req, res) => {
   try {
-    console.log("🧠 DELETE request from:", req.user);
     const event = await Event.findById(req.params.id);
-
-    if (!event) {
-      console.warn("⚠️ Event not found:", req.params.id);
-      return res.status(404).json({ message: "Event not found" });
-    }
-
-    console.log("🗑️ Attempting to delete event:", event._id);
-    console.log("🛡️ Organizer of event:", event.organizer);
-    console.log("🔐 Requester:", req.user.id);
+    if (!event) return res.status(404).json({ message: "Event not found" });
 
     if (
       event.organizer.toString() !== req.user.id.toString() &&
       req.user.role.toLowerCase() !== "admin"
     ) {
-      console.warn("⛔ Unauthorized delete attempt");
       return res.status(403).json({ message: "Not authorized" });
     }
 
@@ -135,14 +143,5 @@ exports.updateStatus = async (req, res) => {
     res.json(event);
   } catch (err) {
     res.status(400).json({ message: err.message });
-  }
-};
-
-exports.getApprovedEvents = async (req, res) => {
-  try {
-    const events = await Event.find({ status: "approved" });
-    res.status(200).json({ success: true, count: events.length, data: events });
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
