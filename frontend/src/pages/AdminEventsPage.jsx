@@ -16,7 +16,7 @@ const AdminEventsPage = () => {
       const res = await api.get("/api/v1/events/all", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setEvents(res.data);
+      setEvents(res.data || []);
     } catch (err) {
       console.error("Error fetching events", err);
     } finally {
@@ -26,9 +26,11 @@ const AdminEventsPage = () => {
 
   const handleStatusChange = async (eventId, status) => {
     try {
-      await api.put(`/api/v1/events/${eventId}/status`, { status }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.put(
+        `/api/v1/events/${eventId}/status`,
+        { status },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       fetchEvents();
     } catch (err) {
       console.error("Error updating status", err);
@@ -41,7 +43,7 @@ const AdminEventsPage = () => {
   return (
     <div style={pageStyle}>
       <div style={glassBox}>
-        <h2 style={titleStyle}>Admin: All Events</h2>
+        <h2 style={titleStyle}>Admin: Manage All Events</h2>
 
         <div style={filterWrapper}>
           {["all", "approved", "pending", "declined"].map((status) => (
@@ -68,12 +70,32 @@ const AdminEventsPage = () => {
             {filteredEvents.map((event) => (
               <div key={event._id} style={card}>
                 <h3>{event.title}</h3>
-                <p><strong>Date:</strong> {new Date(event.date).toLocaleString()}</p>
-                <p><strong>Location:</strong> {event.location}</p>
-                <p><strong>Status:</strong> <span style={{ color: "#ffc107" }}>{event.status}</span></p>
+                <p>
+                  <strong>Date:</strong> {new Date(event.date).toLocaleString()}
+                </p>
+                <p>
+                  <strong>Location:</strong> {event.location}
+                </p>
+                <p>
+                  <strong>Status:</strong>{" "}
+                  <span
+                    style={{
+                      color:
+                        event.status === "approved"
+                          ? "#00e676"
+                          : event.status === "declined"
+                          ? "#ff5252"
+                          : "#ffc107",
+                      fontWeight: "bold",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    {event.status}
+                  </span>
+                </p>
 
                 {event.status === "pending" && (
-                  <div style={{ marginTop: "0.8rem", display: "flex", gap: "1rem" }}>
+                  <div style={actionGroup}>
                     <button
                       onClick={() => handleStatusChange(event._id, "approved")}
                       style={approveButton}
@@ -97,7 +119,7 @@ const AdminEventsPage = () => {
   );
 };
 
-// 🧠 Styles
+// 🎨 Styles
 const pageStyle = {
   height: "100vh",
   background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
@@ -148,6 +170,12 @@ const card = {
   borderRadius: "12px",
   marginBottom: "1rem",
   backgroundColor: "rgba(255,255,255,0.04)",
+};
+
+const actionGroup = {
+  marginTop: "1rem",
+  display: "flex",
+  gap: "1rem",
 };
 
 const approveButton = {

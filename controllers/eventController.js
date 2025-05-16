@@ -17,9 +17,6 @@ exports.getEventById = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    // Allow access if:
-    // - event is approved
-    // - OR logged-in user is the organizer
     const isOwner = req.user && event.organizer.toString() === req.user.id;
     const isApproved = event.status === "approved";
 
@@ -33,7 +30,6 @@ exports.getEventById = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 exports.createEvent = async (req, res) => {
   try {
@@ -57,6 +53,7 @@ exports.createEvent = async (req, res) => {
       ticketPricing,
       remainingTickets,
       organizer: organizer || req.user._id,
+      status: "pending", // ✅ Always set to "pending"
     });
 
     const savedEvent = await newEvent.save();
@@ -67,7 +64,6 @@ exports.createEvent = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-
 
 exports.updateEvent = async (req, res) => {
   try {
@@ -81,7 +77,16 @@ exports.updateEvent = async (req, res) => {
       return res.status(403).json({ message: "Not authorized" });
     }
 
-    Object.assign(event, req.body);
+    // Prevent status override unless Admin
+    const isAdmin = req.user.role.toLowerCase() === "admin";
+    const { status, ...otherUpdates } = req.body;
+
+    Object.assign(event, otherUpdates);
+
+    if (isAdmin && status) {
+      event.status = status;
+    }
+
     await event.save();
     res.json(event);
   } catch (err) {
@@ -89,7 +94,6 @@ exports.updateEvent = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-
 
 exports.deleteEvent = async (req, res) => {
   try {
@@ -125,6 +129,7 @@ exports.updateStatus = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ message: "Event not found" });
+
     event.status = req.body.status;
     await event.save();
     res.json(event);
@@ -135,9 +140,9 @@ exports.updateStatus = async (req, res) => {
 
 exports.getApprovedEvents = async (req, res) => {
   try {
-    const events = await Event.find({ status: 'approved' });
+    const events = await Event.find({ status: "approved" });
     res.status(200).json({ success: true, count: events.length, data: events });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server Error' });
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
