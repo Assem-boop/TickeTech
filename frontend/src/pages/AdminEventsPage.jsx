@@ -1,110 +1,171 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axiosConfig";
-import EventRow from "../components/EventRow";
 
 const AdminEventsPage = () => {
   const [events, setEvents] = useState([]);
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [error, setError] = useState("");
-
-  const fetchEvents = async () => {
-    try {
-      const res = await api.get("/api/v1/events/all", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      setEvents(res.data);
-    } catch (err) {
-      setError("Failed to load events.");
-    }
-  };
+  const [filter, setFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     fetchEvents();
   }, []);
 
-  const handleUpdateStatus = async (id, newStatus) => {
+  const fetchEvents = async () => {
     try {
-      await api.put(`/api/v1/events/${id}/status`, { status: newStatus }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      const res = await api.get("/api/v1/events/all", {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      fetchEvents(); // refresh
+      setEvents(res.data);
     } catch (err) {
-      setError("Could not update status.");
+      console.error("Error fetching events", err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const filteredEvents = events.filter((e) =>
-    statusFilter === "All" ? true : e.status === statusFilter.toLowerCase()
-  );
+  const handleStatusChange = async (eventId, status) => {
+    try {
+      await api.put(`/api/v1/events/${eventId}/status`, { status }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchEvents();
+    } catch (err) {
+      console.error("Error updating status", err);
+    }
+  };
+
+  const filteredEvents =
+    filter === "all" ? events : events.filter((event) => event.status === filter);
 
   return (
     <div style={pageStyle}>
       <div style={glassBox}>
-        <h2 style={titleStyle}>Manage Events</h2>
+        <h2 style={titleStyle}>Admin: All Events</h2>
 
-        <div style={{ textAlign: "center", marginBottom: "1rem" }}>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            style={selectStyle}
-          >
-            <option>All</option>
-            <option>Approved</option>
-            <option>Pending</option>
-            <option>Declined</option>
-          </select>
-        </div>
-
-        {error && <p style={errorStyle}>{error}</p>}
-
-        <div>
-          {filteredEvents.map((event) => (
-            <EventRow key={event._id} event={event} onUpdateStatus={handleUpdateStatus} />
+        <div style={filterWrapper}>
+          {["all", "approved", "pending", "declined"].map((status) => (
+            <button
+              key={status}
+              onClick={() => setFilter(status)}
+              style={{
+                ...filterButton,
+                backgroundColor: filter === status ? "#00bcd4" : "transparent",
+                color: filter === status ? "white" : "#00bcd4",
+              }}
+            >
+              {status.charAt(0).toUpperCase() + status.slice(1)}
+            </button>
           ))}
         </div>
+
+        {loading ? (
+          <p style={{ color: "#aaa", textAlign: "center" }}>Loading events...</p>
+        ) : filteredEvents.length === 0 ? (
+          <p style={{ color: "#aaa", textAlign: "center" }}>No events found.</p>
+        ) : (
+          <div>
+            {filteredEvents.map((event) => (
+              <div key={event._id} style={card}>
+                <h3>{event.title}</h3>
+                <p><strong>Date:</strong> {new Date(event.date).toLocaleString()}</p>
+                <p><strong>Location:</strong> {event.location}</p>
+                <p><strong>Status:</strong> <span style={{ color: "#ffc107" }}>{event.status}</span></p>
+
+                {event.status === "pending" && (
+                  <div style={{ marginTop: "0.8rem", display: "flex", gap: "1rem" }}>
+                    <button
+                      onClick={() => handleStatusChange(event._id, "approved")}
+                      style={approveButton}
+                    >
+                      ✅ Approve
+                    </button>
+                    <button
+                      onClick={() => handleStatusChange(event._id, "declined")}
+                      style={declineButton}
+                    >
+                      ❌ Decline
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
+// 🧠 Styles
 const pageStyle = {
   height: "100vh",
-  background: "linear-gradient(to right, #141e30, #243b55)",
-  padding: "2rem",
+  background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
+  padding: "3rem 2rem",
   display: "flex",
   justifyContent: "center",
-  alignItems: "start",
+  alignItems: "flex-start",
+  overflowY: "auto",
 };
 
 const glassBox = {
-  background: "rgba(255,255,255,0.05)",
-  backdropFilter: "blur(10px)",
-  padding: "2rem",
+  background: "rgba(255,255,255,0.06)",
+  padding: "3rem",
+  width: "100%",
+  maxWidth: "900px",
   borderRadius: "20px",
   color: "white",
-  maxWidth: "900px",
-  width: "100%",
-  boxShadow: "0 0 40px rgba(0,0,0,0.3)",
+  boxShadow: "0 0 30px rgba(0,0,0,0.3)",
+  border: "1px solid rgba(255,255,255,0.2)",
 };
 
 const titleStyle = {
   textAlign: "center",
+  fontSize: "2rem",
   marginBottom: "1.5rem",
 };
 
-const selectStyle = {
-  padding: "10px 15px",
-  borderRadius: "8px",
-  fontSize: "1rem",
-  backgroundColor: "#fff",
-  border: "none",
+const filterWrapper = {
+  display: "flex",
+  justifyContent: "center",
+  gap: "1rem",
+  marginBottom: "2rem",
 };
 
-const errorStyle = {
-  color: "#ff4f4f",
-  marginBottom: "1rem",
-  textAlign: "center",
+const filterButton = {
+  padding: "10px 16px",
+  borderRadius: "6px",
+  border: "1px solid #00bcd4",
+  cursor: "pointer",
   fontWeight: "bold",
+  transition: "0.3s",
+  background: "none",
+};
+
+const card = {
+  border: "1px solid rgba(255,255,255,0.1)",
+  padding: "1.5rem",
+  borderRadius: "12px",
+  marginBottom: "1rem",
+  backgroundColor: "rgba(255,255,255,0.04)",
+};
+
+const approveButton = {
+  padding: "10px 16px",
+  backgroundColor: "#28a745",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+};
+
+const declineButton = {
+  padding: "10px 16px",
+  backgroundColor: "#dc3545",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
 };
 
 export default AdminEventsPage;
