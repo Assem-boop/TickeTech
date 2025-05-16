@@ -9,6 +9,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
 import OrganizerMyEvents from "./pages/OrganizerMyEvents";
 import Bookings from "./pages/Bookings";
+import BookingDetails from "./pages/BookingDetails";
 import CreateEvent from "./pages/CreateEvent";
 import EditEvent from "./pages/EditEvent";
 import SendOtp from "./pages/SendOtp";
@@ -17,6 +18,8 @@ import ResetPassword from "./pages/ResetPassword";
 import UserProfile from "./pages/UserProfile";
 import UserDetails from "./pages/UserDetails";
 import AdminUsersPage from "./pages/AdminUsersPage";
+import AdminEventsPage from "./pages/AdminEventsPage"; // ✅ NEW
+import EventDetails from "./pages/EventDetails"; // ✅ For viewing event detail (public+users)
 
 // Components
 import Navbar from "./components/Navbar";
@@ -28,15 +31,16 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        {/* Public Routes */}
+        {/* 🌍 Public Routes */}
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<SendOtp />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/events/:id" element={<EventDetails />} />
 
-        {/* Authenticated Profile */}
+        {/* 👤 Authenticated Profile */}
         <Route
           path="/profile"
           element={
@@ -46,7 +50,7 @@ function App() {
           }
         />
 
-        {/* Admin Routes */}
+        {/* 🛠️ Admin Routes */}
         <Route
           path="/admin-dashboard"
           element={
@@ -77,8 +81,18 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/events"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Admin"]}>
+                <AdminEventsPage />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Organizer Routes */}
+        {/* 🧾 Organizer Routes */}
         <Route
           path="/organizer-dashboard"
           element={
@@ -120,13 +134,23 @@ function App() {
           }
         />
 
-        {/* Standard User */}
+        {/* 🎟️ Standard User Bookings */}
         <Route
           path="/bookings"
           element={
             <ProtectedRoute>
               <RoleRoute allowedRoles={["Standard"]}>
                 <Bookings />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/bookings/:id"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Standard"]}>
+                <BookingDetails />
               </RoleRoute>
             </ProtectedRoute>
           }
