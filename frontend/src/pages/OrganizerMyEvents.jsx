@@ -23,11 +23,13 @@ const OrganizerMyEvents = () => {
   return (
     <div style={pageStyle}>
       <div style={glassBox}>
-        <h2 style={titleStyle}>My Events</h2>
+        <h2 style={titleStyle}>🎤 My Events</h2>
         {error && <p style={errorStyle}>{error}</p>}
 
         {events.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#ccc" }}>You haven’t created any events yet.</p>
+          <p style={{ textAlign: "center", color: "#ccc" }}>
+            You haven’t created any events yet.
+          </p>
         ) : (
           <div style={{ overflowX: "auto" }}>
             <table style={tableStyle}>
@@ -54,13 +56,16 @@ const OrganizerMyEvents = () => {
                     <td style={tdStyle}>${event.ticketPricing}</td>
                     <td style={tdStyle}>
                       <span style={badgeStyle(event.status)}>{event.status}</span>
+                      {event.status === "declined" && (
+                        <p style={declineNote}>❌ This event was declined</p>
+                      )}
                     </td>
                     <td style={tdStyle}>
                       <button
                         style={editBtn}
                         onClick={() => handleEdit(event._id)}
                       >
-                        Edit
+                        ✏️ Edit
                       </button>
                     </td>
                   </tr>
@@ -74,7 +79,7 @@ const OrganizerMyEvents = () => {
   );
 };
 
-// 🎨 Styles
+// Styles
 const pageStyle = {
   minHeight: "100vh",
   background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
@@ -90,7 +95,7 @@ const glassBox = {
   borderRadius: "20px",
   padding: "2rem",
   width: "100%",
-  maxWidth: "1000px",
+  maxWidth: "1100px",
   color: "white",
   boxShadow: "0 0 30px rgba(0, 0, 0, 0.4)",
   border: "1px solid rgba(255, 255, 255, 0.2)",
@@ -119,15 +124,18 @@ const thStyle = {
 const tdStyle = {
   padding: "12px",
   borderBottom: "1px solid #444",
+  verticalAlign: "top",
 };
 
 const editBtn = {
-  padding: "6px 10px",
+  padding: "6px 12px",
   backgroundColor: "#ffc107",
   color: "#000",
   border: "none",
-  borderRadius: "5px",
+  borderRadius: "6px",
   cursor: "pointer",
+  fontWeight: "bold",
+  boxShadow: "0 0 10px rgba(255,193,7,0.4)",
 };
 
 const badgeStyle = (status) => ({
@@ -142,8 +150,18 @@ const badgeStyle = (status) => ({
       : status === "pending"
       ? "#ffa726"
       : "#e53935",
-  color: "#fff",
+  color: "white",
+  display: "inline-block",
+  marginBottom: "0.25rem",
+  boxShadow: "0 0 8px rgba(0,0,0,0.3)",
 });
+
+const declineNote = {
+  fontSize: "0.75rem",
+  color: "#e57373",
+  fontStyle: "italic",
+  marginTop: "0.2rem",
+};
 
 const errorStyle = {
   color: "#ff4f4f",
