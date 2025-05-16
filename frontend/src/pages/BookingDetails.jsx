@@ -1,3 +1,4 @@
+// src/pages/BookingDetails.jsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/axiosConfig";
@@ -28,11 +29,19 @@ const BookingDetails = () => {
   }, [id, token]);
 
   if (error) {
-    return <div style={styles.container}><p style={styles.error}>{error}</p></div>;
+    return (
+      <div style={styles.container}>
+        <p style={styles.error}>{error}</p>
+      </div>
+    );
   }
 
   if (!booking) {
-    return <div style={styles.container}><p style={styles.loading}>Loading booking details...</p></div>;
+    return (
+      <div style={styles.container}>
+        <p style={styles.loading}>Loading booking details...</p>
+      </div>
+    );
   }
 
   const event = booking.event || {};
@@ -40,19 +49,22 @@ const BookingDetails = () => {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h2 style={styles.title}>Booking Details</h2>
-        <p><strong>Event:</strong> {event.title || "N/A"}</p>
-        <p><strong>Date:</strong> {new Date(event.date).toLocaleString()}</p>
-        <p><strong>Location:</strong> {event.location}</p>
-        <p><strong>Quantity:</strong> {booking.quantity}</p>
-        <p><strong>Total Price:</strong> ${booking.totalPrice}</p>
-        <p><strong>Status:</strong> {booking.status || "Confirmed"}</p>
-        <p><strong>Booked At:</strong> {new Date(booking.createdAt).toLocaleString()}</p>
+        <h2 style={styles.title}>🎟️ Booking Details</h2>
+        <div style={styles.infoGroup}>
+          <p><strong>Event:</strong> {event.title || "N/A"}</p>
+          <p><strong>Date:</strong> {new Date(event.date).toLocaleString()}</p>
+          <p><strong>Location:</strong> {event.location}</p>
+          <p><strong>Quantity:</strong> {booking.quantity}</p>
+          <p><strong>Total Price:</strong> ${booking.totalPrice}</p>
+          <p><strong>Status:</strong> <span style={styles.status(booking.status)}>{booking.status}</span></p>
+          <p><strong>Booked At:</strong> {new Date(booking.createdAt).toLocaleString()}</p>
+        </div>
       </div>
     </div>
   );
 };
 
+// 🎨 Styles
 const styles = {
   container: {
     height: "100vh",
@@ -78,6 +90,10 @@ const styles = {
     fontWeight: "bold",
     marginBottom: "1.5rem",
     textAlign: "center",
+    color: "#00e676",
+  },
+  infoGroup: {
+    lineHeight: "1.7rem",
   },
   error: {
     color: "#ff4f4f",
@@ -89,6 +105,16 @@ const styles = {
     fontSize: "1.2rem",
     textAlign: "center",
   },
+  status: (status) => ({
+    color:
+      status === "confirmed"
+        ? "#00e676"
+        : status === "canceled"
+        ? "#ff4f4f"
+        : "white",
+    fontWeight: "bold",
+    textTransform: "capitalize",
+  }),
 };
 
 export default BookingDetails;
