@@ -1,3 +1,4 @@
+// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -20,9 +21,9 @@ import UserDetails from "./pages/UserDetails";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import AdminEventsPage from "./pages/AdminEventsPage";
 import EventDetails from "./pages/EventDetails";
-import AllEventsPage from "./pages/AllEventsPage"; // ✅ NEW
+import AllEventsPage from "./pages/AllEventsPage";
+import EventAnalytics from "./pages/EventAnalytics"; // ✅
 
-// Components
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/RoleRoute";
@@ -39,7 +40,7 @@ function App() {
         <Route path="/forgot-password" element={<SendOtp />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/events" element={<AllEventsPage />} /> {/* ✅ NEW */}
+        <Route path="/events" element={<AllEventsPage />} />
         <Route path="/events/:id" element={<EventDetails />} />
 
         {/* 👤 Authenticated Profile */}
@@ -131,6 +132,16 @@ function App() {
             <ProtectedRoute>
               <RoleRoute allowedRoles={["Organizer"]}>
                 <EditEvent />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/organizer-analytics"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Organizer"]}>
+                <EventAnalytics />
               </RoleRoute>
             </ProtectedRoute>
           }
