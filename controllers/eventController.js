@@ -101,7 +101,10 @@ exports.updateEvent = async (req, res) => {
 
     Object.assign(event, otherUpdates);
 
-    if (isAdmin && status) {
+    // 🔄 Force status to "pending" if not admin
+    if (!isAdmin) {
+      event.status = "pending";
+    } else if (status) {
       event.status = status;
     }
 
