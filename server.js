@@ -7,8 +7,15 @@ dotenv.config();
 
 const app = express();
 
+// Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); 
+
+// Debugging: confirm JSON body is being parsed
+app.use((req, res, next) => {
+  console.log("📦 Incoming content-type:", req.headers["content-type"]);
+  next();
+});
 
 // Routes
 const authRoutes = require('./routes/auth');
@@ -17,7 +24,7 @@ const sendOtpRoute = require('./routes/forgotPassword/sendOtp');
 const verifyOtpRoute = require('./routes/forgotPassword/verifyOtp');
 const resetPasswordRoute = require('./routes/forgotPassword/resetPassword');
 const eventRoutes = require('./routes/events');
-const bookingRoutes = require('./routes/bookingRoutes');
+const bookingRoutes = require('./routes/bookings');
 
 // Use routes
 app.use('/api/v1', authRoutes);
@@ -30,14 +37,14 @@ app.use('/api/v1/bookings', bookingRoutes);
 
 // Connect to MongoDB and start server
 mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+  useNewUrlParser: true,
+  useUnifiedTopology: true
 }).then(() => {
-    console.log('Connected to MongoDB');
-    app.listen(process.env.PORT, () => {
-        console.log(`Server running on port ${process.env.PORT}`);
-    });
+  console.log('✅ Connected to MongoDB');
+  app.listen(process.env.PORT, () => {
+    console.log(`🚀 Server running on port ${process.env.PORT}`);
+  });
 }).catch((err) => {
-    console.error('Database connection error:', err.message);
+  console.error('❌ Database connection error:', err.message);
 });
 
