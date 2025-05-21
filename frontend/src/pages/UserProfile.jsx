@@ -14,19 +14,31 @@ const UserProfile = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    api
-      .get("/api/v1/users/profile", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((res) => {
-        const { name, email } = res.data;
-        setFormData((prev) => ({ ...prev, name, email }));
-      })
-      .catch(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await api.get("/api/v1/users/profile", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        console.log("✅ PROFILE DATA:", res.data);
+
+        // Check if data is nested inside 'user' or directly returned
+        const user = res.data.user || res.data;
+
+        if (!user?.name || !user?.email) {
+          throw new Error("Profile data is incomplete.");
+        }
+
+        setFormData((prev) => ({ ...prev, name: user.name, email: user.email }));
+      } catch (err) {
+        console.error("❌ PROFILE FETCH FAILED:", err.response?.data || err.message);
         setError("Failed to load profile. Try re-logging.");
-      });
+      }
+    };
+
+    fetchProfile();
   }, []);
 
   const handleChange = (e) => {
@@ -38,25 +50,28 @@ const UserProfile = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
-
+  
     try {
       const payload = {
         name: formData.name,
         ...(formData.password ? { password: formData.password } : {}),
       };
-
+  
+      console.log("🔼 SUBMITTING PAYLOAD:", payload);
+  
       await api.put("/api/v1/users/profile", payload, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-
+  
       setSuccess("✅ Profile updated successfully!");
       setTimeout(() => navigate("/"), 1500);
     } catch (err) {
+      console.error("❌ PROFILE UPDATE FAILED:", err.response?.data || err.message);
       setError(err.response?.data?.message || "Update failed.");
     }
-  };
+  };  
 
   return (
     <div style={pageWrapper}>

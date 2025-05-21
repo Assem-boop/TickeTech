@@ -3,43 +3,63 @@ const bcrypt = require('bcryptjs');
 const Booking = require('../models/Booking');
 const Event = require('../models/Event');
 
+// 👤 Get current user's profile
 const getProfile = async (req, res) => {
-    res.json(req.user);
-};
+    try {
+      const user = await User.findById(req.user.id).select("-password");
+      if (!user) {
+        return res.status(404).json({ message: "User not found in database" });
+      }
+  
+      console.log("✅ User found:", user.email);
+      res.json(user);
+    } catch (err) {
+      console.error("❌ getProfile error:", err.message);
+      res.status(500).json({ message: "Server error" });
+    }
+  };  
 
+// 🔄 Update current user's profile
 const updateProfile = async (req, res) => {
     const { name, email, password } = req.body;
-    const userId = req.user._id;
-
+    const userId = req.user.id;
+  
+    console.log("🔄 Updating profile for user ID:", userId);
+  
     try {
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        if (name) user.name = name;
-        if (email) user.email = email.toLowerCase();
-        if (password) {
-            const salt = await bcrypt.genSalt(10);
-            user.password = await bcrypt.hash(password, salt);
-        }
-
-        const updated = await user.save();
-
-        res.json({
-            message: 'Profile updated successfully',
-            user: {
-                id: updated._id,
-                name: updated.name,
-                email: updated.email,
-                role: updated.role
-            }
-        });
+      const user = await User.findById(userId);
+      if (!user) {
+        console.error("❌ User not found in updateProfile");
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      if (name) user.name = name;
+      if (email) user.email = email.toLowerCase();
+      if (password) {
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+      }
+  
+      const updated = await user.save();
+  
+      console.log("✅ Profile updated for:", updated.email);
+  
+      res.json({
+        message: "Profile updated successfully",
+        user: {
+          id: updated._id,
+          name: updated.name,
+          email: updated.email,
+          role: updated.role,
+        },
+      });
     } catch (err) {
-        res.status(500).json({ message: err.message });
+      console.error("❌ updateProfile error:", err.message);
+      res.status(500).json({ message: err.message });
     }
-};
+  };  
 
+// 🔍 Admin: get all users
 const getAllUsers = async (req, res) => {
     try {
         const users = await User.find().select('-password');
@@ -49,6 +69,7 @@ const getAllUsers = async (req, res) => {
     }
 };
 
+// 🔍 Admin: get single user by ID
 const getUserById = async (req, res) => {
     try {
         const user = await User.findById(req.params.id).select('-password');
@@ -61,6 +82,7 @@ const getUserById = async (req, res) => {
     }
 };
 
+// 🛠 Admin: update user role
 const updateUserRole = async (req, res) => {
     const { role } = req.body;
 
@@ -90,6 +112,7 @@ const updateUserRole = async (req, res) => {
     }
 };
 
+// ❌ Admin: delete user
 const deleteUser = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -105,6 +128,7 @@ const deleteUser = async (req, res) => {
     }
 };
 
+// 🎟 Standard User: Get my bookings
 const getMyBookings = async (req, res) => {
     try {
         const bookings = await Booking.find({ user: req.user.id })
@@ -117,6 +141,7 @@ const getMyBookings = async (req, res) => {
     }
 };
 
+// 📅 Organizer: Get my events
 const getMyEvents = async (req, res) => {
     try {
         const events = await Event.find({ organizer: req.user.id }).sort({ date: 1 });
@@ -126,6 +151,7 @@ const getMyEvents = async (req, res) => {
     }
 };
 
+// 📈 Organizer: Get event analytics
 const getEventAnalytics = async (req, res) => {
     try {
         const myEvents = await Event.find({ organizer: req.user.id }).select('_id title totalTickets');
