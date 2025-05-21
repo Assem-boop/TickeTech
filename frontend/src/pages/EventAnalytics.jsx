@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../api/axiosConfig";
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -29,44 +29,45 @@ const EventAnalytics = () => {
         setLoading(false);
       })
       .catch(() => {
-        setError("Failed to load analytics data");
+        setError("Failed to load analytics data.");
         setLoading(false);
       });
   }, []);
 
-  // Filter only events with bookings > 0 for chart display
   const eventsWithBookings = events.filter((e) => e.percentBooked > 0);
 
   return (
-    <div style={pageStyle}>
-      <div style={glassBox}>
-        <h2 style={titleStyle}>📊 Your Events Ticket Sales Analytics</h2>
-        <p style={subtitleStyle}>
-          Visualize the percentage of tickets booked for each event you organize.
+    <div style={styles.page}>
+      <div style={styles.box}>
+        <h2 style={styles.title}>📈 Event Ticket Sales Analytics</h2>
+        <p style={styles.subtitle}>
+          Visual representation of the booking percentage per event.
         </p>
 
-        {loading && <p style={infoTextStyle}>Loading analytics data...</p>}
-        {error && <p style={errorStyle}>{error}</p>}
+        {loading && <p style={styles.info}>Loading analytics...</p>}
+        {error && <p style={styles.error}>{error}</p>}
 
         {!loading && !error && events.length === 0 && (
-          <p style={infoTextStyle}>You don’t have any events with ticket sales data yet.</p>
+          <p style={styles.info}>No events or ticket bookings available yet.</p>
         )}
 
         {!loading && !error && events.length > 0 && (
           <>
             <div style={{ overflowX: "auto", marginBottom: "2rem" }}>
-              <table style={tableStyle}>
+              <table style={styles.table}>
                 <thead>
                   <tr>
-                    <th style={thStyle}>Event Title</th>
-                    <th style={thStyle}>Tickets Booked (%)</th>
+                    <th style={styles.th}>Event Title</th>
+                    <th style={styles.th}>Tickets Booked (%)</th>
                   </tr>
                 </thead>
                 <tbody>
                   {events.map((event) => (
                     <tr key={event.eventId}>
-                      <td style={tdStyle}>{event.title}</td>
-                      <td style={tdStyle}>{event.percentBooked}%</td>
+                      <td style={styles.td}>{event.title}</td>
+                      <td style={styles.td}>
+                        <strong>{event.percentBooked}%</strong>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -76,15 +77,14 @@ const EventAnalytics = () => {
             {eventsWithBookings.length > 0 && (
               <div style={{ width: "100%", height: 350 }}>
                 <ResponsiveContainer>
-                  <BarChart
+                  <LineChart
                     data={eventsWithBookings}
                     margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                     <XAxis
                       dataKey="title"
                       tick={{ fill: "white", fontWeight: "600" }}
-                      interval={0}
                       angle={-15}
                       textAnchor="end"
                     />
@@ -94,21 +94,23 @@ const EventAnalytics = () => {
                       tickFormatter={(tick) => `${tick}%`}
                     />
                     <Tooltip
-                      formatter={(value) => `${value}% tickets booked`}
+                      formatter={(value) => `${value}%`}
                       contentStyle={{
-                        backgroundColor: "#0f3460",
-                        borderRadius: "8px",
+                        backgroundColor: "#1e1e2f",
                         border: "none",
+                        borderRadius: "8px",
                         color: "#fff",
-                        fontWeight: "600",
-                        fontSize: "14px",
                       }}
                     />
-                    <Legend
-                      wrapperStyle={{ color: "#aaa", fontWeight: "600", fontSize: 14 }}
+                    <Legend wrapperStyle={{ fontSize: "14px", color: "#fff" }} />
+                    <Line
+                      type="monotone"
+                      dataKey="percentBooked"
+                      stroke="#000"
+                      strokeWidth={3}
+                      name="Tickets Booked (%)"
                     />
-                    <Bar dataKey="percentBooked" fill="#00ffc8" name="Tickets Booked %" />
-                  </BarChart>
+                  </LineChart>
                 </ResponsiveContainer>
               </div>
             )}
@@ -119,77 +121,70 @@ const EventAnalytics = () => {
   );
 };
 
-// Styles
-const pageStyle = {
-  minHeight: "100vh",
-  background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "flex-start",
-  padding: "3rem 1rem",
-  paddingTop: "6rem", // if you have fixed navbar height, adjust padding top accordingly
-};
-
-const glassBox = {
-  background: "rgba(255, 255, 255, 0.05)",
-  backdropFilter: "blur(12px)",
-  borderRadius: "20px",
-  padding: "2rem",
-  width: "100%",
-  maxWidth: "1100px",
-  color: "white",
-  boxShadow: "0 0 30px rgba(0, 0, 0, 0.4)",
-  border: "1px solid rgba(255, 255, 255, 0.2)",
-  animation: "fadeIn 0.8s ease forwards",
-};
-
-const titleStyle = {
-  textAlign: "center",
-  fontSize: "2rem",
-  fontWeight: "700",
-  marginBottom: "0.5rem",
-  color: "#00ffc8",
-};
-
-const subtitleStyle = {
-  textAlign: "center",
-  fontSize: "1.1rem",
-  marginBottom: "2rem",
-  color: "#a0a0a0",
-};
-
-const tableStyle = {
-  width: "100%",
-  borderCollapse: "collapse",
-};
-
-const thStyle = {
-  textAlign: "left",
-  padding: "12px",
-  backgroundColor: "#1e1e2f",
-  color: "#fff",
-  borderBottom: "1px solid #444",
-  fontWeight: "600",
-};
-
-const tdStyle = {
-  padding: "12px",
-  borderBottom: "1px solid #444",
-  verticalAlign: "top",
-};
-
-const errorStyle = {
-  color: "#ff4f4f",
-  textAlign: "center",
-  fontWeight: "bold",
-  marginBottom: "1rem",
-};
-
-const infoTextStyle = {
-  color: "#ccc",
-  textAlign: "center",
-  fontWeight: "500",
-  marginBottom: "1rem",
+// Styling
+const styles = {
+  page: {
+    minHeight: "100vh",
+    background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    paddingTop: "6rem",
+    padding: "3rem 1rem",
+  },
+  box: {
+    background: "rgba(255, 255, 255, 0.06)",
+    border: "1px solid rgba(255, 255, 255, 0.2)",
+    backdropFilter: "blur(10px)",
+    color: "#fff",
+    borderRadius: "20px",
+    padding: "2rem",
+    maxWidth: "1100px",
+    width: "100%",
+    boxShadow: "0 0 20px rgba(0,0,0,0.5)",
+  },
+  title: {
+    textAlign: "center",
+    fontSize: "2rem",
+    fontWeight: "700",
+    color: "#00ffc8",
+    marginBottom: "0.5rem",
+  },
+  subtitle: {
+    textAlign: "center",
+    color: "#aaa",
+    fontSize: "1.1rem",
+    marginBottom: "1.5rem",
+  },
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+    marginBottom: "1rem",
+  },
+  th: {
+    background: "#1e1e2f",
+    color: "#fff",
+    padding: "12px",
+    textAlign: "left",
+    fontWeight: "600",
+    borderBottom: "1px solid #444",
+  },
+  td: {
+    padding: "12px",
+    color: "#eee",
+    borderBottom: "1px solid #444",
+  },
+  info: {
+    color: "#ccc",
+    textAlign: "center",
+    fontWeight: "500",
+  },
+  error: {
+    color: "#ff4f4f",
+    textAlign: "center",
+    fontWeight: "600",
+    marginBottom: "1rem",
+  },
 };
 
 export default EventAnalytics;
