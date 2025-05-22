@@ -22,42 +22,35 @@ const getProfile = async (req, res) => {
 // 🔄 Update current user's profile
 const updateProfile = async (req, res) => {
     const { name, email, password } = req.body;
-    const userId = req.user.id;
-  
-    console.log("🔄 Updating profile for user ID:", userId);
+    const userId = req.user?.id;
   
     try {
       const user = await User.findById(userId);
-      if (!user) {
-        console.error("❌ User not found in updateProfile");
-        return res.status(404).json({ message: "User not found" });
-      }
+      if (!user) return res.status(404).json({ message: 'User not found' });
   
       if (name) user.name = name;
       if (email) user.email = email.toLowerCase();
       if (password) {
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(password, salt);
+        user.password = password; // 🔒 Let Mongoose hook hash it
       }
   
-      const updated = await user.save();
-  
-      console.log("✅ Profile updated for:", updated.email);
+      await user.save();
   
       res.json({
-        message: "Profile updated successfully",
+        message: 'Profile updated successfully',
         user: {
-          id: updated._id,
-          name: updated.name,
-          email: updated.email,
-          role: updated.role,
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
         },
       });
     } catch (err) {
-      console.error("❌ updateProfile error:", err.message);
+      console.error("❌ [updateProfile] Error:", err.message);
       res.status(500).json({ message: err.message });
     }
-  };  
+  };
+  
 
 // 🔍 Admin: get all users
 const getAllUsers = async (req, res) => {
