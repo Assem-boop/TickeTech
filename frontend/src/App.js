@@ -16,13 +16,12 @@ import EditEvent from "./pages/EditEvent";
 import SendOtp from "./pages/SendOtp";
 import VerifyOtp from "./pages/VerifyOtp";
 import ResetPassword from "./pages/ResetPassword";
-import UserProfile from "./pages/UserProfile";
+import ProfilePage from "./pages/ProfilePage"; 
 import UserDetails from "./pages/UserDetails";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import AdminEventsPage from "./pages/AdminEventsPage";
 import EventDetails from "./pages/EventDetails";
-import AllEventsPage from "./pages/AllEventsPage";
-import EventAnalytics from "./pages/EventAnalytics"; // ✅
+import EventAnalytics from "./pages/EventAnalytics";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -40,7 +39,6 @@ function App() {
         <Route path="/forgot-password" element={<SendOtp />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/events" element={<AllEventsPage />} />
         <Route path="/events/:id" element={<EventDetails />} />
 
         {/* 👤 Authenticated Profile */}
@@ -48,7 +46,7 @@ function App() {
           path="/profile"
           element={
             <ProtectedRoute>
-              <UserProfile />
+              <ProfilePage />
             </ProtectedRoute>
           }
         />

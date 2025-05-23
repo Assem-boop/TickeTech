@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../api/axiosConfig";
 
 const Homepage = () => {
@@ -24,12 +25,18 @@ const Homepage = () => {
       <h1 style={headingStyle}>Upcoming Events</h1>
       <div style={gridStyle}>
         {events.map((event) => (
-          <div key={event._id} style={cardStyle}>
-            <h2 style={cardTitle}>{event.title}</h2>
-            <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
-            <p><strong>Location:</strong> {event.location}</p>
-            <p><strong>Price:</strong> ${event.ticketPricing}</p>
-          </div>
+          <Link
+            to={`/events/${event._id}`}
+            key={event._id}
+            style={linkStyle}
+          >
+            <div style={cardStyle}>
+              <h2 style={cardTitle}>{event.title}</h2>
+              <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
+              <p><strong>Location:</strong> {event.location}</p>
+              <p><strong>Price:</strong> ${event.ticketPricing}</p>
+            </div>
+          </Link>
         ))}
         {events.length === 0 && (
           <p style={{ textAlign: "center", width: "100%", color: "#ccc" }}>
@@ -79,6 +86,11 @@ const cardTitle = {
   fontSize: "1.4rem",
   fontWeight: "600",
   marginBottom: "1rem",
+};
+
+const linkStyle = {
+  textDecoration: "none",
+  color: "inherit",
 };
 
 export default Homepage;
