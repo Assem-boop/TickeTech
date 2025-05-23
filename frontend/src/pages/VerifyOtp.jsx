@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const VerifyOtp = () => {
   const navigate = useNavigate();
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState(new Array(6).fill(""));
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -18,19 +18,34 @@ const VerifyOtp = () => {
     }
   }, []);
 
+  const handleChange = (element, index) => {
+    if (isNaN(element.value)) return;
+
+    const newOtp = [...otp];
+    newOtp[index] = element.value;
+    setOtp(newOtp);
+
+    // Automatically focus the next input box
+    if (element.nextSibling) {
+      element.nextSibling.focus();
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
+    const otpCode = otp.join("");
+
     try {
       await api.post("/api/v1/forgot-password/verify-otp", {
         email,
-        code: otp,
+        code: otpCode,
       });
 
       // ✅ Save code for next step
-      localStorage.setItem("verifiedOtpCode", otp);
+      localStorage.setItem("verifiedOtpCode", otpCode);
 
       setSuccess("✅ OTP verified successfully!");
       setTimeout(() => navigate("/reset-password"), 1500);
@@ -47,15 +62,20 @@ const VerifyOtp = () => {
           A 6-digit code was sent to <strong>{email || "your email"}</strong>
         </p>
         <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            maxLength="6"
-            placeholder="Enter 6-digit OTP"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            style={inputStyle}
-            required
-          />
+          <div style={otpContainerStyle}>
+            {otp.map((data, index) => (
+              <input
+                key={index}
+                type="text"
+                maxLength="1"
+                value={data}
+                onChange={(e) => handleChange(e.target, index)}
+                onFocus={(e) => e.target.select()}
+                style={otpInputStyle}
+                required
+              />
+            ))}
+          </div>
           <button type="submit" style={buttonStyle}>
             Verify OTP
           </button>
@@ -67,7 +87,7 @@ const VerifyOtp = () => {
   );
 };
 
-// 🎨 Styles updated to match SendOtp.jsx
+// 🎨 Styles updated for separate OTP boxes
 
 const pageStyle = {
   height: "100vh",
@@ -97,19 +117,24 @@ const titleStyle = {
   fontWeight: "600",
 };
 
-const inputStyle = {
-  width: "100%",
-  padding: "12px 16px",
-  fontSize: "1rem",
+const otpContainerStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  marginBottom: "1.5rem",
+};
+
+const otpInputStyle = {
+  width: "50px",
+  height: "50px",
+  fontSize: "1.5rem",
   textAlign: "center",
   border: "1px solid rgba(255,255,255,0.3)",
   backgroundColor: "rgba(255,255,255,0.1)",
-  borderRadius: "8px", // Match SendOtp.jsx
+  borderRadius: "8px",
   color: "white",
   outline: "none",
   boxShadow: "0 0 8px rgba(0, 0, 0, 0.2)",
   boxSizing: "border-box",
-  marginBottom: "1rem",
 };
 
 const buttonStyle = {
