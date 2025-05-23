@@ -6,6 +6,7 @@ const ProfilePage = () => {
   const [user, setUser] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true); // ✅ loading state
 
   const fetchProfile = async () => {
     try {
@@ -19,6 +20,8 @@ const ProfilePage = () => {
     } catch (err) {
       console.error("❌ PROFILE FETCH FAILED:", err);
       setError("Failed to load profile.");
+    } finally {
+      setLoading(false); // ✅ mark loading complete
     }
   };
 
@@ -27,12 +30,20 @@ const ProfilePage = () => {
   }, []);
 
   const handleUpdateSuccess = async () => {
-    await fetchProfile(); // Refresh user data
-    setShowEditForm(false); // Hide form
+    await fetchProfile();
+    setShowEditForm(false);
   };
 
+  // ✅ Show loader during initial fetch
+  if (loading) {
+    return (
+      <div style={loaderWrapper}>
+        <div style={spinner}></div>
+      </div>
+    );
+  }
+
   if (error) return <p style={errorStyle}>{error}</p>;
-  if (!user) return <p style={titleStyle}>Loading...</p>;
 
   return (
     <div style={pageWrapper}>
@@ -53,6 +64,25 @@ const ProfilePage = () => {
       </div>
     </div>
   );
+};
+
+// 🎨 Loader Styles
+const loaderWrapper = {
+  height: "100vh",
+  width: "100vw",
+  background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+};
+
+const spinner = {
+  width: "60px",
+  height: "60px",
+  border: "6px solid rgba(255, 255, 255, 0.2)",
+  borderTopColor: "#00e676",
+  borderRadius: "50%",
+  animation: "spin 1s linear infinite",
 };
 
 const pageWrapper = {
@@ -101,5 +131,13 @@ const errorStyle = {
   color: "#ff4f4f",
   textAlign: "center",
 };
+
+// ⏳ CSS Keyframe (you must add this to your global CSS if using inline styles only):
+const styleSheet = document.styleSheets[0];
+const keyframes = `
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}`;
+styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
 
 export default ProfilePage;

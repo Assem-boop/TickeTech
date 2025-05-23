@@ -9,6 +9,7 @@ const UpdateProfileForm = ({ currentData, onSuccess }) => {
 
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false); // ✅ new state
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,8 +18,9 @@ const UpdateProfileForm = ({ currentData, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuccess("");
     setError("");
+    setSuccess("");
+    setSaving(true); // ✅ show loading state
 
     try {
       const payload = {
@@ -32,12 +34,15 @@ const UpdateProfileForm = ({ currentData, onSuccess }) => {
         },
       });
 
-      setSuccess("✅ Profile updated successfully!");
-      if (onSuccess) onSuccess(); // Notify parent to refresh profile
-
+      setSuccess("✅ Changes saved successfully!");
+      setTimeout(() => {
+        setSaving(false);
+        if (onSuccess) onSuccess(); // ✅ hide form and refresh data
+      }, 1200); // ✅ simulate a short save time
     } catch (err) {
       console.error("❌ PROFILE UPDATE FAILED:", err.response?.data || err.message);
       setError(err.response?.data?.message || "Update failed.");
+      setSaving(false);
     }
   };
 
@@ -51,6 +56,7 @@ const UpdateProfileForm = ({ currentData, onSuccess }) => {
         onChange={handleChange}
         style={inputStyle}
         required
+        disabled={saving}
       />
       <input
         type="password"
@@ -59,9 +65,10 @@ const UpdateProfileForm = ({ currentData, onSuccess }) => {
         value={formData.password}
         onChange={handleChange}
         style={inputStyle}
+        disabled={saving}
       />
-      <button type="submit" style={buttonStyle}>
-        Save Changes
+      <button type="submit" style={buttonStyle} disabled={saving}>
+        {saving ? "Saving..." : "Save Changes"}
       </button>
       {error && <p style={errorStyle}>{error}</p>}
       {success && <p style={successStyle}>{success}</p>}
@@ -69,6 +76,7 @@ const UpdateProfileForm = ({ currentData, onSuccess }) => {
   );
 };
 
+// Styles
 const formStyle = {
   marginTop: "2rem",
 };
