@@ -3,58 +3,85 @@ const generateOtpEmail = (name, otp) => `
 <html>
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Your OTP Code</title>
   <style>
     body {
       background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Arial', sans-serif;
       color: white;
-      padding: 40px 20px;
       margin: 0;
+      padding: 0;
     }
     .container {
-      max-width: 500px;
-      margin: auto;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 30px;
+      max-width: 600px;
+      margin: 50px auto;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 40px;
       border-radius: 15px;
       border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+      text-align: center;
     }
     .header {
-      text-align: center;
-      font-size: 24px;
+      font-size: 28px;
       font-weight: bold;
       margin-bottom: 20px;
+      color: #00e676;
+    }
+    .sub-header {
+      font-size: 16px;
+      margin-bottom: 30px;
+      color: #ccc;
     }
     .otp-box {
-      text-align: center;
-      font-size: 30px;
+      display: inline-block;
+      font-size: 36px;
       letter-spacing: 8px;
       font-weight: bold;
-      padding: 20px;
-      margin: 30px auto;
-      background: rgba(0, 0, 0, 0.4);
+      padding: 15px 30px;
+      margin: 20px 0;
+      background: rgba(0, 0, 0, 0.6);
       border-radius: 12px;
-      border: 1px solid rgba(0, 230, 118, 0.5);
+      border: 1px solid #00e676;
       color: #00e676;
-      width: fit-content;
+    }
+    .message {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #ddd;
+      margin-bottom: 30px;
     }
     .footer {
       font-size: 12px;
-      text-align: center;
-      margin-top: 40px;
       color: #aaa;
+      margin-top: 40px;
+    }
+    .footer a {
+      color: #00bcd4;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">🔐 Password Reset OTP</div>
-    <p style="text-align:center;">Here is your One-Time Password:</p>
+    <div class="header">🔐 Secure Your Account</div>
+    <div class="sub-header">Hello ${name},</div>
+    <p class="message">
+      We received a request to reset your password. Use the One-Time Password (OTP) below to proceed. 
+      This code is valid for the next <strong>5 minutes</strong>.
+    </p>
     <div class="otp-box">${otp}</div>
-    <p style="text-align:center;">This code will expire in 5 minutes.</p>
-    <p class="footer">If you didn’t request this, please ignore this email.<br/>© ${new Date().getFullYear()} TickeTech</p>
+    <p class="message">
+      If you did not request this, please ignore this email or contact our support team immediately.
+    </p>
+    <p class="footer">
+      Need help? <a href="https://support.ticketech.com">Contact Support</a><br />
+      © ${new Date().getFullYear()} TickeTech. All rights reserved.
+    </p>
   </div>
 </body>
 </html>
