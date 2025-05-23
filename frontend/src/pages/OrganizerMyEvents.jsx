@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axiosConfig";
+import Swal from "sweetalert2";
 
 const OrganizerMyEvents = () => {
   const [events, setEvents] = useState([]);
@@ -24,21 +25,47 @@ const OrganizerMyEvents = () => {
 
   const handleEdit = (id) => navigate(`/edit-event/${id}`);
 
-  const handleDelete = async (id) => {
-    const confirm = window.confirm("Are you sure you want to delete this event?");
-    if (!confirm) return;
-
-    try {
-      await api.delete(`/api/v1/events/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      fetchEvents(); // Refresh list
-    } catch (err) {
-      console.error("❌ DELETE FAILED:", err.response?.data || err.message);
-      alert("Failed to delete event. Try again.");
-    }
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: "Delete Event?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#e53935",
+      cancelButtonColor: "#aaa",
+      confirmButtonText: "Yes, delete it!",
+      background: "#1e1e2f",
+      color: "#fff",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await api.delete(`/api/v1/events/${id}`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
+          Swal.fire({
+            title: "Deleted!",
+            text: "Your event has been removed.",
+            icon: "success",
+            timer: 1500,
+            showConfirmButton: false,
+            background: "#1e1e2f",
+            color: "#fff",
+          });
+          fetchEvents();
+        } catch (err) {
+          console.error("❌ DELETE FAILED:", err);
+          Swal.fire({
+            icon: "error",
+            title: "Failed to delete",
+            text: "Something went wrong. Try again.",
+            background: "#1e1e2f",
+            color: "#fff",
+          });
+        }
+      }
+    });
   };
 
   return (
@@ -106,7 +133,7 @@ const OrganizerMyEvents = () => {
   );
 };
 
-// Styles
+// Same styles as before...
 const pageStyle = {
   minHeight: "100vh",
   background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
