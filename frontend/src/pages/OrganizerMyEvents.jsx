@@ -7,7 +7,7 @@ const OrganizerMyEvents = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchEvents = () => {
     api
       .get("/api/v1/users/events", {
         headers: {
@@ -16,9 +16,30 @@ const OrganizerMyEvents = () => {
       })
       .then((res) => setEvents(res.data))
       .catch(() => setError("Failed to load your events"));
+  };
+
+  useEffect(() => {
+    fetchEvents();
   }, []);
 
   const handleEdit = (id) => navigate(`/edit-event/${id}`);
+
+  const handleDelete = async (id) => {
+    const confirm = window.confirm("Are you sure you want to delete this event?");
+    if (!confirm) return;
+
+    try {
+      await api.delete(`/api/v1/events/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      fetchEvents(); // Refresh list
+    } catch (err) {
+      console.error("❌ DELETE FAILED:", err.response?.data || err.message);
+      alert("Failed to delete event. Try again.");
+    }
+  };
 
   return (
     <div style={pageStyle}>
@@ -66,6 +87,12 @@ const OrganizerMyEvents = () => {
                         onClick={() => handleEdit(event._id)}
                       >
                         ✏️ Edit
+                      </button>{" "}
+                      <button
+                        style={deleteBtn}
+                        onClick={() => handleDelete(event._id)}
+                      >
+                        🗑️ Delete
                       </button>
                     </td>
                   </tr>
@@ -135,7 +162,19 @@ const editBtn = {
   borderRadius: "6px",
   cursor: "pointer",
   fontWeight: "bold",
+  marginRight: "8px",
   boxShadow: "0 0 10px rgba(255,193,7,0.4)",
+};
+
+const deleteBtn = {
+  padding: "6px 12px",
+  backgroundColor: "#e53935",
+  color: "#fff",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "bold",
+  boxShadow: "0 0 10px rgba(229, 57, 53, 0.4)",
 };
 
 const badgeStyle = (status) => ({

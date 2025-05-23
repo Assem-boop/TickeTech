@@ -27,7 +27,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.13.2",
     "nodemailer": "^6.10.0",
-    "recharts": "^2.15.3"
+    "recharts": "^2.15.3",
+    "sweetalert2": "^11.21.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
