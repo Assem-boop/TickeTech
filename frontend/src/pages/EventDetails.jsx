@@ -1,141 +1,72 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/axiosConfig";
+import BookTicketForm from "../components/BookTicketForm";
 
 const EventDetails = () => {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
-
   useEffect(() => {
-    api
-      .get(`/api/v1/events/${id}`)
-      .then((res) => setEvent(res.data))
-      .catch(() => setError("Event not found or not authorized."));
+    const fetchEvent = async () => {
+      try {
+        const res = await api.get(`/api/v1/events/${id}`);
+        console.log("🎯 Event fetched:", res.data);
+        setEvent(res.data);
+      } catch (err) {
+        console.error("❌ Error loading event:", err);
+        setError("Failed to load event.");
+      }
+    };
+
+    fetchEvent();
   }, [id]);
 
-  const handleBooking = async () => {
-    setError("");
-    setSuccess("");
-    try {
-      const res = await api.post(
-        "/api/v1/bookings",
-        { eventId: event._id, quantity },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setSuccess("✅ Booking confirmed!");
-    } catch (err) {
-      setError(err.response?.data?.message || "Booking failed.");
-    }
-  };
-
-  if (!event) {
-    return (
-      <div style={pageStyle}>
-        <p style={{ color: "white" }}>Loading event details...</p>
-      </div>
-    );
-  }
-
-  const available = event.remainingTickets;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (!event) return <p>Loading...</p>;
 
   return (
     <div style={pageStyle}>
       <div style={glassBox}>
         <h2 style={titleStyle}>{event.title}</h2>
-        <p>{event.description}</p>
-        <p><strong>Date:</strong> {new Date(event.date).toLocaleString()}</p>
+        <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
         <p><strong>Location:</strong> {event.location}</p>
+        <p><strong>Description:</strong> {event.description}</p>
         <p><strong>Price:</strong> ${event.ticketPricing}</p>
-        <p><strong>Available Tickets:</strong> {available > 0 ? available : "Sold Out"}</p>
+        <p><strong>Tickets Available:</strong> {event.totalTickets}</p>
 
-        {user?.role === "Standard" && available > 0 && (
-          <>
-            <input
-              type="number"
-              value={quantity}
-              min={1}
-              max={available}
-              onChange={(e) => setQuantity(e.target.value)}
-              style={inputStyle}
-            />
-            <button onClick={handleBooking} style={buttonStyle}>
-              Book Now (${event.ticketPricing * quantity})
-            </button>
-          </>
-        )}
+        <hr style={{ margin: "2rem 0", opacity: 0.3 }} />
 
-        {error && <p style={errorStyle}>{error}</p>}
-        {success && <p style={successStyle}>{success}</p>}
+        <BookTicketForm event={event} />
       </div>
     </div>
   );
 };
 
-// Styles
 const pageStyle = {
   minHeight: "100vh",
-  background: "linear-gradient(to right, #141e30, #243b55)",
+  background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  padding: "2rem",
+  padding: "3rem",
 };
 
 const glassBox = {
   background: "rgba(255, 255, 255, 0.05)",
-  color: "white",
   backdropFilter: "blur(10px)",
   borderRadius: "20px",
-  padding: "3rem",
-  maxWidth: "500px",
+  padding: "2.5rem",
+  color: "white",
   width: "90%",
+  maxWidth: "600px",
   border: "1px solid rgba(255,255,255,0.2)",
 };
 
 const titleStyle = {
-  fontSize: "1.8rem",
-  fontWeight: "bold",
+  fontSize: "2rem",
   marginBottom: "1rem",
-};
-
-const inputStyle = {
-  width: "100%",
-  padding: "10px",
-  marginTop: "1rem",
-  marginBottom: "1rem",
-  borderRadius: "8px",
-  border: "1px solid rgba(255,255,255,0.3)",
-  backgroundColor: "rgba(255,255,255,0.1)",
-  color: "white",
-};
-
-const buttonStyle = {
-  width: "100%",
-  padding: "12px",
-  backgroundColor: "#00bcd4",
-  border: "none",
-  color: "white",
-  borderRadius: "8px",
-  cursor: "pointer",
-  boxShadow: "0 0 10px #00bcd4",
-};
-
-const errorStyle = {
-  color: "#ff4f4f",
-  marginTop: "1rem",
-  fontWeight: "bold",
-};
-
-const successStyle = {
-  color: "#00e676",
-  marginTop: "1rem",
-  fontWeight: "bold",
 };
 
 export default EventDetails;

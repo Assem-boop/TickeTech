@@ -4,7 +4,7 @@ const Event = require('../models/Event');
 
 exports.createBooking = async (req, res) => {
   try {
-    const { eventId, quantity } = req.body;
+    const { eventId, numberOfTickets, totalPrice } = req.body;
     const userId = req.user.id;
 
     const event = await Event.findById(eventId);
@@ -12,27 +12,27 @@ exports.createBooking = async (req, res) => {
       return res.status(404).json({ message: 'Event not found' });
     }
 
-    if (event.availableTickets < quantity) {
+    if (event.remainingTickets < numberOfTickets) {
       return res.status(400).json({ message: 'Not enough tickets available' });
     }
-
-    const totalPrice = quantity * event.price;
 
     const booking = await Booking.create({
       user: userId,
       event: eventId,
-      quantity,
+      numberOfTickets,
       totalPrice,
     });
 
-    event.availableTickets -= quantity;
+    event.remainingTickets -= numberOfTickets;
     await event.save();
 
     res.status(201).json({ success: true, booking });
   } catch (error) {
+    console.error("❌ Booking error:", error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 exports.cancelBooking = async (req, res) => {
