@@ -83,32 +83,34 @@ const ResetPassword = () => {
   );
 };
 
-// 🎨 Same styles as previous
+// 🎨 Updated styles to match SendOtp.jsx
 
 const pageStyle = {
   height: "100vh",
-  background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
+  background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)", // Match SendOtp.jsx
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  padding: "1rem",
 };
 
 const glassBox = {
   background: "rgba(255,255,255,0.05)",
   backdropFilter: "blur(10px)",
-  padding: "3rem 2.5rem",
-  borderRadius: "16px",
+  padding: "3rem",
+  borderRadius: "20px",
   border: "1px solid rgba(255,255,255,0.2)",
-  boxShadow: "0 0 20px rgba(0,0,0,0.3)",
-  width: "90%",
-  maxWidth: "420px",
+  boxShadow: "0 0 30px rgba(0,0,0,0.3)",
+  width: "100%",
+  maxWidth: "480px", // Match SendOtp.jsx
   color: "white",
 };
 
 const titleStyle = {
   textAlign: "center",
-  fontSize: "1.7rem",
+  fontSize: "1.8rem",
   marginBottom: "1.5rem",
+  fontWeight: "600",
 };
 
 const inputStyle = {
@@ -117,20 +119,24 @@ const inputStyle = {
   fontSize: "1rem",
   border: "1px solid rgba(255,255,255,0.3)",
   backgroundColor: "rgba(255,255,255,0.1)",
-  borderRadius: "8px",
+  borderRadius: "8px", // Match SendOtp.jsx
   color: "white",
+  outline: "none",
+  boxShadow: "0 0 8px rgba(0, 0, 0, 0.2)",
+  boxSizing: "border-box",
   marginBottom: "1rem",
 };
 
 const buttonStyle = {
   width: "100%",
   padding: "12px",
+  fontSize: "1rem",
   backgroundColor: "#00bcd4",
-  border: "none",
   color: "white",
-  fontWeight: "600",
-  borderRadius: "8px",
+  border: "none",
+  borderRadius: "8px", // Match SendOtp.jsx
   cursor: "pointer",
+  transition: "all 0.3s ease",
   boxShadow: "0 0 10px #00bcd4",
 };
 

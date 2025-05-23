@@ -15,10 +15,7 @@ const SendOtp = () => {
 
     try {
       const res = await api.post("/api/v1/forgot-password/send-otp", { email });
-
-      // ✅ Store for later steps
       localStorage.setItem("otpEmail", email);
-
       setSuccess("✅ OTP sent to your email.");
       setTimeout(() => navigate("/verify-otp"), 1500);
     } catch (err) {
@@ -31,10 +28,8 @@ const SendOtp = () => {
     <div style={pageStyle}>
       <div style={glassBox}>
         <h2 style={titleStyle}>Forgot Password</h2>
-        <p style={{ marginBottom: "1.5rem", textAlign: "center" }}>
-          Enter your registered email to receive an OTP.
-        </p>
-        <form onSubmit={handleSendOtp}>
+        <p style={descStyle}>Enter your registered email to receive an OTP.</p>
+        <form onSubmit={handleSendOtp} style={formStyle}>
           <input
             type="email"
             placeholder="Email address"
@@ -54,32 +49,47 @@ const SendOtp = () => {
   );
 };
 
-// 🎨 Reuse styles
+// ✅ Matching login UI 1:1
 const pageStyle = {
   height: "100vh",
   background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  padding: "1rem",
 };
 
 const glassBox = {
   background: "rgba(255, 255, 255, 0.05)",
   backdropFilter: "blur(10px)",
   borderRadius: "20px",
-  padding: "3rem 2.5rem",
-  width: "90%",
-  maxWidth: "420px",
+  padding: "3rem",
+  width: "100%",
+  maxWidth: "480px", // ✅ match login width
   color: "white",
   boxShadow: "0 0 30px rgba(0, 0, 0, 0.3)",
   border: "1px solid rgba(255, 255, 255, 0.2)",
 };
 
 const titleStyle = {
-  textAlign: "center",
-  fontSize: "1.7rem",
+  fontSize: "1.8rem",
   fontWeight: "600",
   marginBottom: "1rem",
+  textAlign: "center",
+};
+
+const descStyle = {
+  marginBottom: "2rem",
+  textAlign: "center",
+  fontSize: "1rem",
+  color: "#ccc",
+};
+
+const formStyle = {
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  gap: "1.2rem",
 };
 
 const inputStyle = {
@@ -87,11 +97,12 @@ const inputStyle = {
   padding: "12px 16px",
   fontSize: "1rem",
   border: "1px solid rgba(255, 255, 255, 0.3)",
-  borderRadius: "8px",
+  borderRadius: "8px", // Match Login.jsx
   backgroundColor: "rgba(255, 255, 255, 0.1)",
   color: "white",
-  marginBottom: "1rem",
   outline: "none",
+  boxShadow: "0 0 8px rgba(0, 0, 0, 0.2)",
+  boxSizing: "border-box", // Match Login.jsx
 };
 
 const buttonStyle = {
@@ -101,22 +112,20 @@ const buttonStyle = {
   backgroundColor: "#00bcd4",
   color: "white",
   border: "none",
-  borderRadius: "8px",
+  borderRadius: "8px", // Match Login.jsx
   cursor: "pointer",
   transition: "all 0.3s ease",
-  boxShadow: "0 0 10px #00bcd4",
+  boxShadow: "0 0 10px #00bcd4", // Match Login.jsx
 };
 
 const errorStyle = {
   color: "#ff4f4f",
-  marginTop: "1rem",
   fontWeight: "bold",
   textAlign: "center",
 };
 
 const successStyle = {
   color: "#00e676",
-  marginTop: "1rem",
   fontWeight: "bold",
   textAlign: "center",
 };
