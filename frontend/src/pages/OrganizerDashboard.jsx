@@ -45,10 +45,10 @@ const DashboardCard = ({ title, subtitle, icon, onClick }) => (
   </div>
 );
 
-// 💎 Styles
+// 💎 Updated Styles
 const pageStyle = {
   height: "100vh",
-  background: "linear-gradient(to right, #141e30, #243b55)",
+  background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)", // ✅ now matches the rest
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
@@ -95,6 +95,7 @@ const cardStyle = {
   textAlign: "center",
   boxShadow: "0 0 20px rgba(0, 0, 0, 0.2)",
 };
+
 const iconStyle = {
   fontSize: "2rem",
   marginBottom: "0.7rem",
