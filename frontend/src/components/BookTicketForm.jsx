@@ -23,9 +23,6 @@ const BookTicketForm = ({ event }) => {
       totalPrice,
     };
 
-    console.log("📦 Final booking payload:", payload);
-
-    // ✅ Sanity check
     if (!payload.eventId || !numberOfTickets || isNaN(totalPrice)) {
       console.error("⚠️ Invalid payload:", payload);
       setBookingMessage("⚠️ Booking failed: Please enter a valid number of tickets.");
@@ -39,8 +36,13 @@ const BookTicketForm = ({ event }) => {
         },
       });
 
-      console.log("✅ Booking success:", res.data);
       setBookingMessage("✅ Booking confirmed!");
+      console.log("✅ Booking success:", res.data);
+
+      // ✅ Reload page after short delay
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (err) {
       console.error("❌ Booking failed:", err.response?.data || err.message);
       setBookingMessage(
@@ -70,7 +72,6 @@ const BookTicketForm = ({ event }) => {
   );
 };
 
-// Styles
 const formStyle = {
   display: "flex",
   flexDirection: "column",

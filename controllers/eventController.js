@@ -59,7 +59,6 @@ exports.createEvent = async (req, res) => {
       location,
       totalTickets,
       ticketPricing,
-      remainingTickets,
       organizer,
     } = req.body;
 
@@ -70,9 +69,9 @@ exports.createEvent = async (req, res) => {
       location,
       totalTickets,
       ticketPricing,
-      remainingTickets,
+      remainingTickets: totalTickets, // ✅ Automatically match total
       organizer: organizer || req.user._id,
-      status: "pending", // 👈 Always starts as pending
+      status: "pending",
     });
 
     const savedEvent = await newEvent.save();
@@ -83,6 +82,7 @@ exports.createEvent = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
 
 exports.updateEvent = async (req, res) => {
   try {
@@ -97,11 +97,17 @@ exports.updateEvent = async (req, res) => {
     }
 
     const isAdmin = req.user.role.toLowerCase() === "admin";
-    const { status, ...otherUpdates } = req.body;
+    const { status, totalTickets, ...otherUpdates } = req.body;
 
     Object.assign(event, otherUpdates);
 
-    // 🔄 Force status to "pending" if not admin
+    if (typeof totalTickets !== "undefined") {
+      const ticketsUsed = event.totalTickets - event.remainingTickets;
+      const newRemaining = totalTickets - ticketsUsed;
+      event.totalTickets = totalTickets;
+      event.remainingTickets = Math.max(newRemaining, 0); // ✅ prevent negative
+    }
+
     if (!isAdmin) {
       event.status = "pending";
     } else if (status) {
@@ -115,6 +121,7 @@ exports.updateEvent = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
 
 exports.deleteEvent = async (req, res) => {
   try {

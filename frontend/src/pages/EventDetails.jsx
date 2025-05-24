@@ -34,7 +34,7 @@ const EventDetails = () => {
         <p><strong>Location:</strong> {event.location}</p>
         <p><strong>Description:</strong> {event.description}</p>
         <p><strong>Price:</strong> ${event.ticketPricing}</p>
-        <p><strong>Tickets Available:</strong> {event.totalTickets}</p>
+        <p><strong>Tickets Available:</strong> {event.remainingTickets}</p>
 
         <hr style={{ margin: "2rem 0", opacity: 0.3 }} />
 

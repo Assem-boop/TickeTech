@@ -47,34 +47,48 @@ const MyBookings = () => {
         ) : bookings.length === 0 ? (
           <p style={infoText}>No bookings yet.</p>
         ) : (
-          bookings.map((b) => (
-            <div key={b._id} style={cardStyle}>
-              <h3 style={eventTitle}>{b.event?.title || "Untitled Event"}</h3>
-              <p>
-                <strong>Date:</strong>{" "}
-                {new Date(b.event?.date).toLocaleString("en-GB")}
-              </p>
-              <p>
-                <strong>Location:</strong> {b.event?.location}
-              </p>
-              <p>
-                <strong>Quantity:</strong> {b.quantity}
-              </p>
-              <p>
-                <strong>Total:</strong> ${b.totalPrice}
-              </p>
-              <button onClick={() => handleCancel(b._id)} style={cancelButton}>
-                Cancel Booking
-              </button>
-            </div>
-          ))
+          <table style={tableStyle}>
+            <thead>
+              <tr>
+                <th style={thStyle}>Event</th>
+                <th style={thStyle}>Date</th>
+                <th style={thStyle}>Location</th>
+                <th style={thStyle}>Tickets</th>
+                <th style={thStyle}>Total</th>
+                <th style={thStyle}>Status</th>
+                <th style={thStyle}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bookings.map((b) => (
+                <tr key={b._id}>
+                  <td style={tdStyle}>{b.event?.title}</td>
+                  <td style={tdStyle}>
+                    {new Date(b.event?.date).toLocaleDateString()}
+                  </td>
+                  <td style={tdStyle}>{b.event?.location}</td>
+                  <td style={tdStyle}>{b.numberOfTickets}</td>
+                  <td style={tdStyle}>${b.totalPrice}</td>
+                  <td style={tdStyle}>Confirmed</td>
+                  <td style={tdStyle}>
+                    <button
+                      onClick={() => handleCancel(b._id)}
+                      style={cancelButton}
+                    >
+                      Cancel
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
     </div>
   );
 };
 
-// ✨ Cinematic Styles
+// 🎨 Styles
 const pageStyle = {
   height: "100vh",
   background: "linear-gradient(to right, #141e30, #243b55)",
@@ -86,7 +100,7 @@ const pageStyle = {
 
 const glassBox = {
   width: "100%",
-  maxWidth: "700px",
+  maxWidth: "1100px",
   padding: "2rem",
   background: "rgba(255, 255, 255, 0.05)",
   backdropFilter: "blur(12px)",
@@ -102,25 +116,30 @@ const titleStyle = {
   textAlign: "center",
 };
 
-const cardStyle = {
-  background: "rgba(255,255,255,0.08)",
-  padding: "1.5rem",
-  borderRadius: "10px",
-  marginBottom: "1rem",
-  boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+const tableStyle = {
+  width: "100%",
+  borderCollapse: "collapse",
 };
 
-const eventTitle = {
-  fontSize: "1.3rem",
-  marginBottom: "0.5rem",
+const thStyle = {
+  textAlign: "left",
+  padding: "12px",
+  backgroundColor: "#1e1e2f",
+  color: "#fff",
+  borderBottom: "1px solid #444",
+};
+
+const tdStyle = {
+  padding: "12px",
+  borderBottom: "1px solid #444",
+  verticalAlign: "top",
 };
 
 const cancelButton = {
-  marginTop: "1rem",
   backgroundColor: "#ff5252",
   color: "white",
   border: "none",
-  padding: "10px 20px",
+  padding: "8px 16px",
   borderRadius: "6px",
   cursor: "pointer",
   fontWeight: "bold",
