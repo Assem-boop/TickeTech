@@ -67,7 +67,7 @@ const MyBookings = () => {
                     {new Date(b.event?.date).toLocaleDateString()}
                   </td>
                   <td style={tdStyle}>{b.event?.location}</td>
-                  <td style={tdStyle}>{b.numberOfTickets}</td>
+                  <td style={tdStyle}>{b.numberOfTickets || 0}</td>
                   <td style={tdStyle}>${b.totalPrice}</td>
                   <td style={tdStyle}>Confirmed</td>
                   <td style={tdStyle}>
