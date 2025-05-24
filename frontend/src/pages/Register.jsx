@@ -8,7 +8,7 @@ const Register = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    role: "Standard",
+    role: "Standard", // default
     password: "",
     confirmPassword: "",
   });
@@ -114,7 +114,7 @@ const Register = () => {
               >
                 <option value="Standard">Standard</option>
                 <option value="Organizer">Organizer</option>
-                <option value="Admin">Admin</option>
+                {/* ✅ Admin removed from list */}
               </select>
             </>
           )}
@@ -167,7 +167,7 @@ const Register = () => {
   );
 };
 
-// 🧩 Styles
+// 🎨 Styles
 const pageStyle = {
   height: "100vh",
   background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",

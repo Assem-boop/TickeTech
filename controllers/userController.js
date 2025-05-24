@@ -119,15 +119,23 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// 🎟 Standard User: Get my bookings
 const getMyBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ user: req.user.id })
       .populate('event', 'title date location')
       .sort({ createdAt: -1 });
 
-    res.json(bookings);
+    const transformed = bookings.map((b) => ({
+      _id: b._id,
+      event: b.event,
+      numberOfTickets: b.numberOfTickets,  // ✅ explicitly mapped
+      totalPrice: b.totalPrice,
+    }));
+
+    console.log("✅ Bookings returned to client:", transformed);
+    res.json(transformed);
   } catch (err) {
+    console.error("❌ getMyBookings error:", err.message);
     res.status(500).json({ message: 'Could not fetch bookings' });
   }
 };

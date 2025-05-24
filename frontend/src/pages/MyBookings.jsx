@@ -10,12 +10,36 @@ const MyBookings = () => {
 
   useEffect(() => {
     const fetchBookings = async () => {
+      console.log("📦 Fetching bookings with token:", token);
+
       try {
         const res = await api.get("/api/v1/users/bookings", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setBookings(res.data);
+
+        console.log("✅ Raw bookings response:", res.data);
+
+        const bookingsData = res.data.map((booking, index) => {
+          const tickets = booking.numberOfTickets;
+          const hasField = tickets !== undefined && tickets !== null;
+
+          console.log(
+            `🔍 Booking #${index + 1}:`,
+            `Event=${booking.event?.title || "?"}`,
+            `Tickets=${tickets}`,
+            `Has numberOfTickets? => ${hasField}`
+          );
+
+          return {
+            ...booking,
+            numberOfTickets: hasField ? tickets : 0,
+          };
+        });
+
+        console.log("✅ Processed bookings data:", bookingsData);
+        setBookings(bookingsData);
       } catch (err) {
+        console.error("❌ Error fetching bookings:", err);
         setError("Failed to load bookings.");
       } finally {
         setLoading(false);
@@ -26,12 +50,15 @@ const MyBookings = () => {
   }, [token]);
 
   const handleCancel = async (id) => {
+    console.log(`🗑 Cancelling booking with ID: ${id}`);
     try {
       await api.delete(`/api/v1/bookings/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setBookings((prev) => prev.filter((b) => b._id !== id));
+      console.log("✅ Cancelled successfully");
     } catch (err) {
+      console.error("❌ Cancel booking error:", err);
       alert("Failed to cancel booking.");
     }
   };
@@ -60,14 +87,20 @@ const MyBookings = () => {
               </tr>
             </thead>
             <tbody>
-              {bookings.map((b) => (
+              {bookings.map((b, i) => (
                 <tr key={b._id}>
-                  <td style={tdStyle}>{b.event?.title}</td>
+                  <td style={tdStyle}>{b.event?.title || "N/A"}</td>
                   <td style={tdStyle}>
-                    {new Date(b.event?.date).toLocaleDateString()}
+                    {b.event?.date
+                      ? new Date(b.event.date).toLocaleDateString()
+                      : "N/A"}
                   </td>
-                  <td style={tdStyle}>{b.event?.location}</td>
-                  <td style={tdStyle}>{b.numberOfTickets || 0}</td>
+                  <td style={tdStyle}>{b.event?.location || "N/A"}</td>
+                  <td style={tdStyle}>
+                    {b.numberOfTickets !== undefined
+                      ? b.numberOfTickets
+                      : "❌ Missing"}
+                  </td>
                   <td style={tdStyle}>${b.totalPrice}</td>
                   <td style={tdStyle}>Confirmed</td>
                   <td style={tdStyle}>
