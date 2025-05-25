@@ -3,6 +3,8 @@ const router = express.Router();
 const User = require('../../models/User');
 const Otp = require('../../models/Otp');
 const sendEmail = require('../../utils/sendEmail');
+const generateOtpEmail = require('../../utils/sendOtpEmailTemplate'); // ✅ new import
+
 
 router.post('/', async (req, res) => {
     const { email } = req.body;
