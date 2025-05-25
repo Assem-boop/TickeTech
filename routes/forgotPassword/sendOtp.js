@@ -36,8 +36,8 @@ router.post('/', async (req, res) => {
         await sendEmail(
             email,
             'Reset Code',
-            `Use this code to reset your password: ${code}`
-        );
+            generateOtpEmail(user.name || user.email, code)
+          );
 
         res.status(200).json({ message: 'Code sent' });
     } catch (err) {
