@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const Booking = require('../models/Booking');
-const Event = require('../models/Event');
+const Event = require('../models/eventModel');
 
 const getProfile = async (req, res) => {
     res.json(req.user);
