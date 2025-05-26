@@ -1,3 +1,4 @@
+// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -15,13 +16,13 @@ import EditEvent from "./pages/EditEvent";
 import SendOtp from "./pages/SendOtp";
 import VerifyOtp from "./pages/VerifyOtp";
 import ResetPassword from "./pages/ResetPassword";
+import ProfilePage from "./pages/ProfilePage"; 
 import UserDetails from "./pages/UserDetails";
 import AdminUsersPage from "./pages/AdminUserPage";
 import AdminEventsPage from "./pages/AdminEventPage";
 import EventDetails from "./pages/EventDetails";
-import EventAnalytics from "./pages/EventAnalytics"; // Make sure this file exists
+import EventAnalytics from "./pages/EventAnalytics";
 
-// Components
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/RoleRoute";
@@ -31,7 +32,7 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        {/* Public Routes */}
+        {/* 🌍 Public Routes */}
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -40,16 +41,17 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/events/:id" element={<EventDetails />} />
 
-        {/* Authenticated Profile */}
+        {/* 👤 Authenticated Profile */}
         <Route
           path="/profile"
           element={
             <ProtectedRoute>
+              <ProfilePage />
             </ProtectedRoute>
           }
         />
 
-        {/* Admin Routes */}
+        {/* 🛠️ Admin Routes */}
         <Route
           path="/admin-dashboard"
           element={
@@ -91,7 +93,7 @@ function App() {
           }
         />
 
-        {/* Organizer Routes */}
+        {/* 🧾 Organizer Routes */}
         <Route
           path="/organizer-dashboard"
           element={
@@ -143,7 +145,7 @@ function App() {
           }
         />
 
-        {/* Standard User Bookings */}
+        {/* 🎟️ Standard User Bookings */}
         <Route
           path="/bookings"
           element={
