@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -23,7 +22,6 @@ const Navbar = () => {
 
       <div style={linkContainer}>
         <Link to="/" style={navLink}>Home</Link>
-        <Link to="/events" style={navLink}>All Events</Link>
 
         {!user ? (
           <>
@@ -35,14 +33,13 @@ const Navbar = () => {
             {role === "admin" && (
               <>
                 <Link to="/admin-dashboard" style={navLink}>Admin Panel</Link>
-                <Link to="/admin/users" style={navLink}>Users</Link>
+                {/* ✅ "Users" removed */}
               </>
             )}
 
             {role === "organizer" && (
               <>
                 <Link to="/organizer-dashboard" style={navLink}>Organizer Panel</Link>
-                <Link to="/organizer-my-events" style={navLink}>My Events</Link>
               </>
             )}
 
