@@ -17,8 +17,8 @@ import VerifyOtp from "./pages/VerifyOtp";
 import ResetPassword from "./pages/ResetPassword";
 import ProfilePage from "./pages/ProfilePage"; 
 import UserDetails from "./pages/UserDetails";
-import AdminUsersPage from "./pages/AdminUsersPage";
-import AdminEventsPage from "./pages/AdminEventsPage";
+import AdminUsersPage from "./pages/AdminUserPage";
+import AdminEventsPage from "./pages/AdminEventPage";
 import EventDetails from "./pages/EventDetails";
 import EventAnalytics from "./pages/EventAnalytics";
 
