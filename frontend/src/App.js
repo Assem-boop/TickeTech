@@ -6,23 +6,22 @@ import Homepage from "./pages/Homepage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/AdminDashboard";
-//import OrganizerDashboard from "./pages/OrganizerDashboard";
-//import OrganizerMyEvents from "./pages/OrganizerMyEvents";
+import OrganizerDashboard from "./pages/OrganizerDashboard";
+import OrganizerMyEvents from "./pages/OrganizerMyEvents";
 import Bookings from "./pages/Bookings";
 import BookingDetails from "./pages/BookingDetails";
-//import CreateEvent from "./pages/CreateEvent";
-//import EditEvent from "./pages/EditEvent";
+import CreateEvent from "./pages/CreateEvent";
+import EditEvent from "./pages/EditEvent";
 import SendOtp from "./pages/SendOtp";
 import VerifyOtp from "./pages/VerifyOtp";
 import ResetPassword from "./pages/ResetPassword";
-//import UserProfile from "./pages/UserProfile";
-//import UserDetails from "./pages/UserDetails";
-import AdminUsersPage from "./pages/AdminUserPage";
-import AdminEventsPage from "./pages/AdminEventPage";
-//import EventDetails from "./pages/EventDetails";
-//import AllEventsPage from "./pages/AllEventsPage"; // ✅ NEW
+import ProfilePage from "./pages/ProfilePage"; 
+import UserDetails from "./pages/UserDetails";
+import AdminUsersPage from "./pages/AdminUsersPage";
+import AdminEventsPage from "./pages/AdminEventsPage";
+import EventDetails from "./pages/EventDetails";
+import EventAnalytics from "./pages/EventAnalytics";
 
-// Components
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/RoleRoute";
@@ -39,9 +38,17 @@ function App() {
         <Route path="/forgot-password" element={<SendOtp />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/events/:id" element={<EventDetails />} />
 
-
-   
+        {/* 👤 Authenticated Profile */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* 🛠️ Admin Routes */}
         <Route
@@ -64,7 +71,16 @@ function App() {
             </ProtectedRoute>
           }
         />
-       
+        <Route
+          path="/admin/user/:id"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Admin"]}>
+                <UserDetails />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/admin/events"
           element={
@@ -76,8 +92,57 @@ function App() {
           }
         />
 
-        
-      
+        {/* 🧾 Organizer Routes */}
+        <Route
+          path="/organizer-dashboard"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Organizer"]}>
+                <OrganizerDashboard />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/organizer-my-events"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Organizer"]}>
+                <OrganizerMyEvents />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create-event"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Organizer"]}>
+                <CreateEvent />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/edit-event/:id"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Organizer"]}>
+                <EditEvent />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/organizer-analytics"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Organizer"]}>
+                <EventAnalytics />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
 
         {/* 🎟️ Standard User Bookings */}
         <Route
