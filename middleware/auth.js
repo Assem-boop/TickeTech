@@ -24,10 +24,10 @@ const protect = async (req, res, next) => {
     }
 
     req.user = {
-      id: user._id.toString(), 
+      id: user._id.toString(), // ✅ use .toString() for reliable comparison
       name: user.name,
       email: user.email,
-      role: decoded.role || user.role, 
+      role: decoded.role || user.role, // fallback if role missing
     };
 
     next();
