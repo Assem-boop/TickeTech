@@ -4,6 +4,9 @@ import api from "../api/axiosConfig";
 
 const Homepage = () => {
   const [events, setEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [search, setSearch] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
 
   useEffect(() => {
     api
@@ -13,23 +16,48 @@ const Homepage = () => {
           ? res.data
           : res.data.data;
         setEvents(eventsArray || []);
+        setFilteredEvents(eventsArray || []);
       })
       .catch((err) => {
         console.error("Error fetching events:", err);
         setEvents([]);
+        setFilteredEvents([]);
       });
   }, []);
+
+  useEffect(() => {
+    const lowerSearch = search.toLowerCase();
+    const filtered = events.filter((event) =>
+      event.title.toLowerCase().includes(lowerSearch) &&
+      (locationFilter === "" || event.location.toLowerCase() === locationFilter.toLowerCase())
+    );
+    setFilteredEvents(filtered);
+  }, [search, locationFilter, events]);
 
   return (
     <div style={pageStyle}>
       <h1 style={headingStyle}>Upcoming Events</h1>
+
+      <div style={filterContainer}>
+        <input
+          type="text"
+          placeholder="Search by event title..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={searchInput}
+        />
+        <input
+          type="text"
+          placeholder="Filter by location..."
+          value={locationFilter}
+          onChange={(e) => setLocationFilter(e.target.value)}
+          style={searchInput}
+        />
+      </div>
+
       <div style={gridStyle}>
-        {events.map((event) => (
-          <Link
-            to={`/events/${event._id}`}
-            key={event._id}
-            style={linkStyle}
-          >
+        {filteredEvents.map((event) => (
+          <Link to={`/events/${event._id}`} key={event._id} style={linkStyle}>
             <div style={cardStyle}>
               <h2 style={cardTitle}>{event.title}</h2>
               <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
@@ -38,9 +66,10 @@ const Homepage = () => {
             </div>
           </Link>
         ))}
-        {events.length === 0 && (
+
+        {filteredEvents.length === 0 && (
           <p style={{ textAlign: "center", width: "100%", color: "#ccc" }}>
-            No events available at the moment.
+            No events match your search.
           </p>
         )}
       </div>
@@ -62,6 +91,25 @@ const headingStyle = {
   fontWeight: "bold",
   marginBottom: "2rem",
   textShadow: "0 2px 8px rgba(0,0,0,0.4)",
+};
+
+const filterContainer = {
+  display: "flex",
+  justifyContent: "center",
+  gap: "1rem",
+  marginBottom: "2rem",
+  flexWrap: "wrap",
+};
+
+const searchInput = {
+  padding: "0.75rem 1rem",
+  borderRadius: "10px",
+  border: "1px solid rgba(255,255,255,0.2)",
+  background: "rgba(255,255,255,0.1)",
+  color: "white",
+  fontSize: "1rem",
+  width: "250px",
+  outline: "none",
 };
 
 const gridStyle = {
