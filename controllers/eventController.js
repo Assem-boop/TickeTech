@@ -1,4 +1,4 @@
-const Event = require("../models/eventModel");
+const Event = require("../models/Event");
 const jwt = require("jsonwebtoken");
 
 exports.getAllEvents = async (req, res) => {
