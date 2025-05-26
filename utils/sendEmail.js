@@ -19,8 +19,8 @@ const sendEmail = async (to, subject, text) => {
             text
         });
     } catch (err) {
-        throw new Error('Failed to send email');
-    }
+        console.log('Email sending failed:', err); 
+        throw err;    }
 };
 
 module.exports = sendEmail;
