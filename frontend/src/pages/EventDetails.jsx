@@ -11,6 +11,7 @@ const EventDetails = () => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
+        // ✅ Corrected fetch URL with backticks
         const res = await api.get(`/api/v1/events/${id}`);
         console.log("🎯 Event fetched:", res.data);
         setEvent(res.data);
@@ -38,12 +39,18 @@ const EventDetails = () => {
 
         <hr style={{ margin: "2rem 0", opacity: 0.3 }} />
 
-        <BookTicketForm event={event} />
+        {/* ✅ Ticket booking form */}
+        <BookTicketForm
+          eventId={event._id}
+          ticketPrice={event.ticketPricing}
+          availableTickets={event.remainingTickets}
+        />
       </div>
     </div>
   );
 };
 
+// ✅ Styles
 const pageStyle = {
   minHeight: "100vh",
   background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
