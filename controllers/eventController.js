@@ -59,10 +59,7 @@ exports.createEvent = async (req, res) => {
       location,
       totalTickets,
       ticketPricing,
-<<<<<<< HEAD
       remainingTickets,
-=======
->>>>>>> d3ed8dce1a57eeb61c915662366181f51dfae24c
       organizer,
     } = req.body;
 

@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const Booking = require('../models/Booking');
-const Event = require('../models/eventModel');
+const Event = require('../models/Event');
 
 // 👤 Get current user's profile
 const getProfile = async (req, res) => {
