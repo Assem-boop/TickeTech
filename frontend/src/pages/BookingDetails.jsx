@@ -64,7 +64,7 @@ const BookingDetails = () => {
   );
 };
 
-// 🎨 Styles
+// Styles
 const styles = {
   container: {
     height: "100vh",

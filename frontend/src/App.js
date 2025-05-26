@@ -20,7 +20,7 @@ import UserDetails from "./pages/UserDetails";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import AdminEventsPage from "./pages/AdminEventsPage";
 import EventDetails from "./pages/EventDetails";
-import AllEventsPage from "./pages/AllEventsPage"; // ✅ NEW
+import AllEventsPage from "./pages/AllEventsPage"; // NEW
 
 // Components
 import Navbar from "./components/Navbar";
@@ -32,17 +32,17 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        {/* 🌍 Public Routes */}
+        {/*  Public Routes */}
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<SendOtp />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/events" element={<AllEventsPage />} /> {/* ✅ NEW */}
+        <Route path="/events" element={<AllEventsPage />} /> {/*  NEW */}
         <Route path="/events/:id" element={<EventDetails />} />
 
-        {/* 👤 Authenticated Profile */}
+        {/*  Authenticated Profile */}
         <Route
           path="/profile"
           element={
@@ -52,7 +52,7 @@ function App() {
           }
         />
 
-        {/* 🛠️ Admin Routes */}
+        {/*  Admin Routes */}
         <Route
           path="/admin-dashboard"
           element={
@@ -94,7 +94,7 @@ function App() {
           }
         />
 
-        {/* 🧾 Organizer Routes */}
+        {/*  Organizer Routes */}
         <Route
           path="/organizer-dashboard"
           element={
@@ -136,7 +136,7 @@ function App() {
           }
         />
 
-        {/* 🎟️ Standard User Bookings */}
+        {/*  Standard User Bookings */}
         <Route
           path="/bookings"
           element={

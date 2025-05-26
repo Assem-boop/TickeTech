@@ -12,12 +12,12 @@ const AdminDashboard = () => {
 
         <div style={gridStyle}>
           <button onClick={() => navigate("/admin/events")} style={cardStyle}>
-            🗂️ Manage Events
+            Manage Events
             <p style={cardDesc}>View all events & approve/reject pending ones</p>
           </button>
 
           <button onClick={() => navigate("/admin/users")} style={cardStyle}>
-            👥 Manage Users
+            Manage Users
             <p style={cardDesc}>View, update roles, and remove users</p>
           </button>
         </div>
@@ -26,7 +26,7 @@ const AdminDashboard = () => {
   );
 };
 
-// 🎨 Styles
+//  Styles
 const pageStyle = {
   height: "100vh",
   background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",

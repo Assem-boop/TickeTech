@@ -100,13 +100,13 @@ const AdminEventsPage = () => {
                       onClick={() => handleStatusChange(event._id, "approved")}
                       style={approveButton}
                     >
-                      ✅ Approve
+                      Approve
                     </button>
                     <button
                       onClick={() => handleStatusChange(event._id, "declined")}
                       style={declineButton}
                     >
-                      ❌ Decline
+                      Decline
                     </button>
                   </div>
                 )}
@@ -119,7 +119,7 @@ const AdminEventsPage = () => {
   );
 };
 
-// 🎨 Styles
+// Styles
 const pageStyle = {
   height: "100vh",
   background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",

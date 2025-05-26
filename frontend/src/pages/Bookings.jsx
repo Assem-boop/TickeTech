@@ -34,7 +34,7 @@ const Bookings = () => {
       });
       setBookings((prev) => prev.filter((b) => b._id !== id));
     } catch {
-      alert("❌ Could not cancel booking.");
+      alert("Could not cancel booking.");
     }
   };
 
@@ -87,7 +87,7 @@ const Bookings = () => {
   );
 };
 
-// 💅 Styles
+// Styles
 const pageStyle = {
   minHeight: "100vh",
   background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
