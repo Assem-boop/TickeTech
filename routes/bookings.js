@@ -5,7 +5,7 @@ const {
   cancelBooking,
   getBookingById,
 } = require('../controllers/bookingController');
-const { protect } = require('../middleware/auth');
+const { protect, authorizeRoles } = require('../middleware/auth');
 
 
 router.use(protect);

@@ -1,4 +1,4 @@
-const Event = require("../models/eventModel");
+const Event = require("../models/Event");
 const jwt = require("jsonwebtoken");
 
 exports.getAllEvents = async (req, res) => {
@@ -59,7 +59,10 @@ exports.createEvent = async (req, res) => {
       location,
       totalTickets,
       ticketPricing,
+<<<<<<< HEAD
       remainingTickets,
+=======
+>>>>>>> d3ed8dce1a57eeb61c915662366181f51dfae24c
       organizer,
     } = req.body;
 
@@ -70,9 +73,15 @@ exports.createEvent = async (req, res) => {
       location,
       totalTickets,
       ticketPricing,
+<<<<<<< HEAD
       remainingTickets,
       organizer: organizer || req.user._id,
       status: "pending", // 👈 Always starts as pending
+=======
+      remainingTickets: totalTickets, // ✅ Automatically match total
+      organizer: organizer || req.user._id,
+      status: "pending",
+>>>>>>> d3ed8dce1a57eeb61c915662366181f51dfae24c
     });
 
     const savedEvent = await newEvent.save();
@@ -83,6 +92,7 @@ exports.createEvent = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
 
 exports.updateEvent = async (req, res) => {
   try {
@@ -97,11 +107,25 @@ exports.updateEvent = async (req, res) => {
     }
 
     const isAdmin = req.user.role.toLowerCase() === "admin";
+<<<<<<< HEAD
     const { status, ...otherUpdates } = req.body;
 
     Object.assign(event, otherUpdates);
 
     // 🔄 Force status to "pending" if not admin
+=======
+    const { status, totalTickets, ...otherUpdates } = req.body;
+
+    Object.assign(event, otherUpdates);
+
+    if (typeof totalTickets !== "undefined") {
+      const ticketsUsed = event.totalTickets - event.remainingTickets;
+      const newRemaining = totalTickets - ticketsUsed;
+      event.totalTickets = totalTickets;
+      event.remainingTickets = Math.max(newRemaining, 0); // ✅ prevent negative
+    }
+
+>>>>>>> d3ed8dce1a57eeb61c915662366181f51dfae24c
     if (!isAdmin) {
       event.status = "pending";
     } else if (status) {
@@ -116,6 +140,10 @@ exports.updateEvent = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> d3ed8dce1a57eeb61c915662366181f51dfae24c
 exports.deleteEvent = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);

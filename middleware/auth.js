@@ -13,7 +13,7 @@ const protect = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    
+    // Make sure `decoded.id` exists — your JWT must be signed with `{ id, role }`
     if (!decoded.id) {
       return res.status(401).json({ message: 'Token missing user ID' });
     }
@@ -24,15 +24,15 @@ const protect = async (req, res, next) => {
     }
 
     req.user = {
-      id: user._id.toString(), 
+      id: user._id.toString(), // ✅ use .toString() for reliable comparison
       name: user.name,
       email: user.email,
-      role: decoded.role || user.role, 
+      role: decoded.role || user.role, // fallback if role missing
     };
 
     next();
   } catch (err) {
-    console.error(" JWT verification failed:", err.message);
+    console.error("❌ JWT verification failed:", err.message);
     res.status(401).json({ message: 'Not authorized, token failed' });
   }
 };
