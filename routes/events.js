@@ -6,6 +6,8 @@ const { protect, authorizeRoles } = require("../middleware/auth");
 
 router.post("/", protect, authorizeRoles("Organizer"), eventController.createEvent);
 
+router.post("/", protect, authorizeRoles("Organizer"), eventController.createEvent);
+
 // Organizer: Create Event
 router.post("/", protect, authorizeRoles("Organizer"), eventController.createEvent);
 

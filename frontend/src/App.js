@@ -5,6 +5,24 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Homepage from "./pages/Homepage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import AdminDashboard from "./pages/AdminDashboard";
+import OrganizerDashboard from "./pages/OrganizerDashboard";
+import OrganizerMyEvents from "./pages/OrganizerMyEvents";
+import Bookings from "./pages/Bookings";
+import BookingDetails from "./pages/BookingDetails";
+import CreateEvent from "./pages/CreateEvent";
+import EditEvent from "./pages/EditEvent";
+import SendOtp from "./pages/SendOtp";
+import VerifyOtp from "./pages/VerifyOtp";
+import ResetPassword from "./pages/ResetPassword";
+import UserProfile from "./pages/UserProfile";
+import UserDetails from "./pages/UserDetails";
+import AdminUsersPage from "./pages/AdminUsersPage";
+import AdminEventsPage from "./pages/AdminEventsPage";
+import EventDetails from "./pages/EventDetails";
+import AllEventsPage from "./pages/AllEventsPage"; // NEW
+
+// Components
 import SendOtp from "./pages/SendOtp";
 import VerifyOtp from "./pages/VerifyOtp";
 import ResetPassword from "./pages/ResetPassword";
@@ -35,6 +53,7 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
+        {/*  Public Routes */}
         {/* 🌍 Public Routes */}
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
@@ -42,6 +61,10 @@ function App() {
         <Route path="/forgot-password" element={<SendOtp />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/events" element={<AllEventsPage />} /> {/*  NEW */}
+        <Route path="/events/:id" element={<EventDetails />} />
+
+        {/*  Authenticated Profile */}
         {/* 🌍 Public Route */}
         <Route path="/" element={<Homepage />} />
         <Route path="/events/:id" element={<EventDetails />} />
@@ -51,11 +74,55 @@ function App() {
           path="/profile"
           element={
             <ProtectedRoute>
+              <UserProfile />
               <ProfilePage />
             </ProtectedRoute>
           }
         />
 
+        {/*  Admin Routes */}
+        <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Admin"]}>
+                <AdminDashboard />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Admin"]}>
+                <AdminUsersPage />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/user/:id"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Admin"]}>
+                <UserDetails />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/events"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Admin"]}>
+                <AdminEventsPage />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        {/*  Organizer Routes */}
         {/* 🧾 Organizer Routes */}
         <Route
           path="/organizer-dashboard"
@@ -97,6 +164,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/*  Standard User Bookings */}
+        <Route
+          path="/bookings"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Standard"]}>
+                <Bookings />
         <Route
           path="/organizer-analytics"
           element={
@@ -107,6 +182,12 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/bookings/:id"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Standard"]}>
+                <BookingDetails />
 
         {/* 🛠️ Admin Route (Only one available page) */}
         <Route
@@ -124,5 +205,6 @@ function App() {
   );
 }
 
+export default App;
 export default App;
 export default App;

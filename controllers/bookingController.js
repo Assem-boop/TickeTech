@@ -1,6 +1,7 @@
 const Booking = require('../models/Booking');
 const Event = require('../models/eventModel');
 
+
 // ✅ Create Booking
 exports.createBooking = async (req, res) => {
   try {
