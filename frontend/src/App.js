@@ -23,6 +23,27 @@ import EventDetails from "./pages/EventDetails";
 import AllEventsPage from "./pages/AllEventsPage"; // NEW
 
 // Components
+import SendOtp from "./pages/SendOtp";
+import VerifyOtp from "./pages/VerifyOtp";
+import ResetPassword from "./pages/ResetPassword";
+
+// Components
+// src/App.jsx
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+// Pages (only these are available)
+import Homepage from "./pages/Homepage";
+import OrganizerDashboard from "./pages/OrganizerDashboard";
+import OrganizerMyEvents from "./pages/OrganizerMyEvents";
+import CreateEvent from "./pages/CreateEvent";
+import EditEvent from "./pages/EditEvent";
+import ProfilePage from "./pages/ProfilePage";
+import UserDetails from "./pages/UserDetails";
+import EventDetails from "./pages/EventDetails";
+import EventAnalytics from "./pages/EventAnalytics";
+
+// ✅ Assuming these components are defined somewhere in your code
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/RoleRoute";
@@ -33,6 +54,7 @@ function App() {
       <Navbar />
       <Routes>
         {/*  Public Routes */}
+        {/* 🌍 Public Routes */}
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -43,11 +65,17 @@ function App() {
         <Route path="/events/:id" element={<EventDetails />} />
 
         {/*  Authenticated Profile */}
+        {/* 🌍 Public Route */}
+        <Route path="/" element={<Homepage />} />
+        <Route path="/events/:id" element={<EventDetails />} />
+
+        {/* 👤 Authenticated Profile */}
         <Route
           path="/profile"
           element={
             <ProtectedRoute>
               <UserProfile />
+              <ProfilePage />
             </ProtectedRoute>
           }
         />
@@ -95,6 +123,7 @@ function App() {
         />
 
         {/*  Organizer Routes */}
+        {/* 🧾 Organizer Routes */}
         <Route
           path="/organizer-dashboard"
           element={
@@ -143,6 +172,12 @@ function App() {
             <ProtectedRoute>
               <RoleRoute allowedRoles={["Standard"]}>
                 <Bookings />
+        <Route
+          path="/organizer-analytics"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Organizer"]}>
+                <EventAnalytics />
               </RoleRoute>
             </ProtectedRoute>
           }
@@ -153,6 +188,14 @@ function App() {
             <ProtectedRoute>
               <RoleRoute allowedRoles={["Standard"]}>
                 <BookingDetails />
+
+        {/* 🛠️ Admin Route (Only one available page) */}
+        <Route
+          path="/admin/user/:id"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["Admin"]}>
+                <UserDetails />
               </RoleRoute>
             </ProtectedRoute>
           }
@@ -162,4 +205,6 @@ function App() {
   );
 }
 
+export default App;
+export default App;
 export default App;
