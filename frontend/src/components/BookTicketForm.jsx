@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 const BookTicketForm = ({ eventId, ticketPrice, availableTickets }) => {
   const navigate = useNavigate();
 
-  // Ensure ticketPrice and availableTickets are valid numbers
   const safeTicketPrice = typeof ticketPrice === 'number' ? ticketPrice : 0;
   const safeAvailableTickets =
     typeof availableTickets === 'number' ? availableTickets : 0;
@@ -20,6 +19,7 @@ const BookTicketForm = ({ eventId, ticketPrice, availableTickets }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (quantity < 1 || quantity > safeAvailableTickets) {
       alert(`You can book between 1 and ${safeAvailableTickets} tickets.`);
       return;
@@ -28,18 +28,35 @@ const BookTicketForm = ({ eventId, ticketPrice, availableTickets }) => {
     setIsSubmitting(true);
 
     try {
-      await axios.post(`/events/${eventId}/bookings`, { quantity });
+      await axios.post(
+        `/api/v1/bookings`,
+        { 
+          eventId,
+          numberOfTickets: quantity,
+          totalPrice: quantity * safeTicketPrice
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+        }
+      );
       navigate('/bookings');
     } catch (error) {
+      console.error('Booking error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
+      });
       alert(
-        error.response?.data?.message || 'Booking failed. Please try again.'
+        `Booking failed: ${error.response?.data?.message || error.message || 'Please try again.'}`
       );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Show error message if event data is invalid
   if (!eventId || safeTicketPrice <= 0 || safeAvailableTickets <= 0) {
     return (
       <div className="max-w-md p-6 bg-white rounded shadow-md">
